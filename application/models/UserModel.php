@@ -642,7 +642,7 @@ class UserModel  extends CI_Model
         $bid = $result['id'];
         $result_likequery = $this->db->query("SELECT count(*) as totallike FROM `tb_bestielike` WHERE bestie_id='$bid' and like_status='like'");
         $likeoutput =  $result_likequery->row();
-        $result_commentquery = $this->db->query("SELECT count(*) as totalcomment FROM `tb_bestiecomment` WHERE bestieid='$bid'");
+        $result_commentquery = $this->db->query("SELECT count(*) as totalcomment FROM `tb_bestiecomment` WHERE bestie_id='$bid'");
         $commentoutput =  $result_commentquery->row();
         $data[] =  array(
           'tableid'        => $results['bestie_id'],
@@ -3023,7 +3023,7 @@ class UserModel  extends CI_Model
     $user_id = $this->input->post('userid');
     $data = array();
     $result = $this->db->query(" select * from tb_match join tb_matchupload on tb_match.matchid=tb_matchupload.matchid WHERE rival_id='$user_id' and opponent_id='$user_id' and tb_matchupload.filetype='file' GROUP by tb_match.matchid");
-
+    
     if ($this->db->affected_rows() > 0) {
       $result_array = $result->result_array();
       $data = array();
@@ -3523,11 +3523,11 @@ class UserModel  extends CI_Model
             'receiver_likecount' => $receiver_like,
 
             'total_likecount' => $sender_like + $receiver_like,
-            'userliked_sender' => $userrivallike,
-            'userliked_receiver' => $useroppolike,
-            'userliked_common' => $usercommonlike,
-            'agree_count' => $agree,
-            'disagree_count' => $disagree,
+            // 'userliked_sender' => $userrivallike,
+            // 'userliked_receiver' => $useroppolike,
+            // 'userliked_common' => $usercommonlike,
+            // 'agree_count' => $agree,
+            // 'disagree_count' => $disagree,
             'total_comment' => $commentoutput->total_comments,
             'total_commoncomments' => $commoncommentoutput->total_commoncomments,
             'match_status' => '1',
@@ -4268,7 +4268,7 @@ class UserModel  extends CI_Model
     $current_date    = date('Y-m-d H:i:s');
     $userid = $this->input->post('userid');
     // echo "select * from tb_match WHERE (rival_id='$userid' or opponent_id='$userid') and invitation_status='accept' and '$current_date' between replied_at and match_end";die();
-    $result = $this->db->query("select * from tb_match join tb_matchupload on tb_match.matchid=tb_matchupload.matchid WHERE opponent_id='$userid' and invitation_status='accept' and match_end <'$current_date' and tb_matchupload.filetype='link' GROUP by tb_match.matchid");
+    $result = $this->db->query("select * from tb_match join tb_matchupload on tb_match.matchid=tb_matchupload.matchid WHERE opponent_id='$userid' and invitation_status='accept' and match_end >'$current_date' and tb_matchupload.filetype='link' GROUP by tb_match.matchid");
     if ($this->db->affected_rows() > 0) {
       $result_array = $result->result_array();
       $data = array();
@@ -11739,7 +11739,7 @@ class UserModel  extends CI_Model
   }
   public function Bestielike()
   {
-    $bid = $this->input->post('bestieid');
+    $bid = $this->input->post('bestie_id');
     $uid = $this->input->post('userid');
     $valid = $this->db->query("select * from tb_bestie WHERE bestie_id='$bid' ");
     if ($this->db->affected_rows() > 0) {
@@ -11765,7 +11765,7 @@ class UserModel  extends CI_Model
         }
       } else {
         $data = array(
-          'bestie_id' => $this->input->post('bestieid'),
+          'bestie_id' => $this->input->post('bestie_id'),
           'user_liked' => $this->input->post('userid'),
           'like_status' => 'like',
         );
@@ -11784,7 +11784,7 @@ class UserModel  extends CI_Model
   {
     date_default_timezone_set('Asia/Kolkata');
     $current_date    = date('Y-m-d H:i:s');
-    $bid = $this->input->post('bestieid');
+    $bid = $this->input->post('bestie_id');
     $cid = $this->input->post('commentid');
     $result = $this->db->query("select * from tb_bestie WHERE bestie_id='$bid'");
     if ($this->db->affected_rows() > 0) {
@@ -11792,7 +11792,7 @@ class UserModel  extends CI_Model
         //new comment
         $datas = array(
           'userid' => $this->input->post('userid'),
-          'bestieid' => $this->input->post('bestieid'),
+          'bestie_id' => $this->input->post('bestie_id'),
           'comment' => $this->input->post('comment'),
           'commented_at' => $current_date
         );
@@ -11808,7 +11808,7 @@ class UserModel  extends CI_Model
         if ($this->db->affected_rows() > 0) {
           $datas = array(
             'userid' => $this->input->post('userid'),
-            'bestieid' => $this->input->post('bestieid'),
+            'bestie_id' => $this->input->post('bestie_id'),
             'comment' => $this->input->post('comment'),
             'replied_commentid' => $cid,
             'commented_at' => $current_date
@@ -11830,8 +11830,8 @@ class UserModel  extends CI_Model
   }
   public function getbestieComment()
   {
-    $bestieid = $this->input->post('bestieid');
-    $result_query = $this->db->query("SELECT * FROM `tb_bestiecomment` WHERE bestieid='$bestieid' and is_active='0' and  replied_commentid='0' ");
+    $bestie_id = $this->input->post('bestie_id');
+    $result_query = $this->db->query("SELECT * FROM `tb_bestiecomment` WHERE bestie_id='$bestie_id' and is_active='0' and  replied_commentid='0' ");
     $output = $result_query->result_array();
     // print_r($output);die();
     $data = array();
@@ -11839,7 +11839,7 @@ class UserModel  extends CI_Model
     foreach ($output as $result) {
       $cid = $result['id'];
       $uid = $result['userid'];
-      $resultcommentquery = $this->db->query("SELECT count(*) as total_repliedcomment FROM `tb_bestiecomment` WHERE bestieid='$bestieid' and is_active='0' and replied_commentid='$cid'");
+      $resultcommentquery = $this->db->query("SELECT count(*) as total_repliedcomment FROM `tb_bestiecomment` WHERE bestie_id='$bestie_id' and is_active='0' and replied_commentid='$cid'");
       $commentarray = $resultcommentquery->row();
       $resultlikequery = $this->db->query("SELECT count(*) as totallike FROM `tb_bestiecommentlike` WHERE commentid='$cid'");
       $likearray = $resultlikequery->row();
@@ -11860,7 +11860,7 @@ class UserModel  extends CI_Model
         $pic = base_url() . 'uploads/profile_image/user.png';
       }
       $repliedcommentarray = array();
-      $resultreply_query = $this->db->query("SELECT * FROM `tb_bestiecomment` WHERE bestieid='$bestieid' and is_active='0' and  replied_commentid='$cid'");
+      $resultreply_query = $this->db->query("SELECT * FROM `tb_bestiecomment` WHERE bestie_id='$bestie_id' and is_active='0' and  replied_commentid='$cid'");
       $outputreply = $resultreply_query->result_array();
       foreach ($outputreply as $results) {
         $rcid = $results['id'];
@@ -11885,7 +11885,7 @@ class UserModel  extends CI_Model
         }
         $re_cid = $results['id'];
         $re_repliedcommentarray = array();
-        $re_resultreply_query = $this->db->query("SELECT * FROM `tb_bestiecomment` WHERE bestieid='$bestieid' and is_active='0' and  replied_commentid='$re_cid'");
+        $re_resultreply_query = $this->db->query("SELECT * FROM `tb_bestiecomment` WHERE bestie_id='$bestie_id' and is_active='0' and  replied_commentid='$re_cid'");
         $re_outputreply = $re_resultreply_query->result_array();
         foreach ($re_outputreply as $re_results) {
           $re_rcid = $re_results['id'];
@@ -12016,15 +12016,15 @@ class UserModel  extends CI_Model
   }
   public function gettotalcommentcount()
   {
-    $bestieid = $this->input->post('senderid');
-    $resultcommentquery = $this->db->query("SELECT count(*) as total_comment FROM `tb_bestiecomment` WHERE bestieid='$bestieid' and is_active='0'");
+    $bestie_id = $this->input->post('senderid');
+    $resultcommentquery = $this->db->query("SELECT count(*) as total_comment FROM `tb_bestiecomment` WHERE bestie_id='$bestie_id' and is_active='0'");
     $commentarray = $resultcommentquery->row();
     return $commentarray->total_comment;
   }
   public function gettotallikecount()
   {
-    $bestieid = $this->input->post('senderid');
-    $resultlikequery = $this->db->query("SELECT count(*) as total_like FROM `tb_bestielike` WHERE bestie_id='$bestieid' and like_status='like'");
+    $bestie_id = $this->input->post('senderid');
+    $resultlikequery = $this->db->query("SELECT count(*) as total_like FROM `tb_bestielike` WHERE bestie_id='$bestie_id' and like_status='like'");
     $likearray = $resultlikequery->row();
     return $likearray->total_like;
   }

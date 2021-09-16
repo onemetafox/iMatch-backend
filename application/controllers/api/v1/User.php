@@ -62,9 +62,9 @@ class User extends CI_Controller
             'isocode'  => $isocode,
             'profile_pic' => $image,
             'device_token' => $device_token,
-            'device_type' => $device_type,
-            'latitude' => $long,
-            'longitude' => $lat
+            'device_type' => $device_type
+            // 'latitude' => $long,
+            // 'longitude' => $lat
         );
         $result = $this->UserModel->register($data);
         if (!empty($result)) {
