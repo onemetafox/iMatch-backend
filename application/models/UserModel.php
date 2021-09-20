@@ -1865,6 +1865,7 @@ class UserModel  extends CI_Model
         if ($uploadedfile->num_rows() > 0) {
           $up_files = $uploadedfile->result_array();
             $compare_result = array();
+            $total_like = 0;
             foreach($up_files as $item){
               $fileid = $item['mup_id'];
               $filetype = $item['filetype'];
