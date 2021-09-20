@@ -9010,6 +9010,7 @@ class UserModel  extends CI_Model
       } else {
         $query = $this->db->query("select * from tb_user WHERE id='$uid'"); //rival
         $output = $query->row();
+
         $matchsenderfilequery = $this->db->query("select * from tb_matchupload WHERE user_uploaded='$uid' and matchid=$matchid"); //rival
         if ($matchsenderfilequery->num_rows() > 0) {
           $senderfileoutput = $matchsenderfilequery->row();
