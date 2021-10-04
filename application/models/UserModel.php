@@ -1174,308 +1174,277 @@ class UserModel  extends CI_Model
     date_default_timezone_set('Asia/Kolkata');
     $current_date    = date('Y-m-d H:i:s');
     $user_id = $this->input->post('userid');
-    $result = $this->db->query("select * from tb_match WHERE rival_id='$user_id' and opponent_id='$user_id'");
+    $data = array();
+    $result = $this->db->query(" select * from tb_match join tb_matchupload on tb_match.matchid=tb_matchupload.matchid WHERE rival_id='$user_id' and opponent_id='$user_id' and tb_match.match_type ='personal' GROUP by tb_match.matchid");
+    
     if ($this->db->affected_rows() > 0) {
       $result_array = $result->result_array();
       $data = array();
       foreach ($result_array as $result) {
-        $matchid = $result['matchid'];
-        $uid = $result['rival_id'];
-        $query = $this->db->query("select * from tb_user WHERE id='$uid'");
-        $output = $query->row();
-        if (!empty($output->profile_pic)) {
-          $string = $output->profile_pic;
-          if (preg_match('/[\'^£$%&*()}{@#~?><>,|=_+¬-]/', $string)) {
-            // one or more of the 'special characters' found in $string
-            // echo "found";
-            $pic = $output->profile_pic;
-          } else {
-            // echo "not found";
-            $pic = base_url() . 'uploads/profile_image/' . $output->profile_pic;
-          }
-        } else {
-          // echo "not found";
-          $pic = base_url() . 'uploads/profile_image/user.png';
-        }
-        $userid = $result['opponent_id'];
-        $queryresult = $this->db->query("select * from tb_user WHERE id='$userid'");
-        $outputdata = $queryresult->row();
-        if (!empty($outputdata->profile_pic)) {
-          $strings = $outputdata->profile_pic;
-          if (preg_match('/[\'^£$%&*()}{@#~?><>,|=_+¬-]/', $strings)) {
-            // one or more of the 'special characters' found in $string
-            // echo "found";
-            $picture = $outputdata->profile_pic;
-          } else {
-            // echo "not found";
-            $picture = base_url() . 'uploads/profile_image/' . $outputdata->profile_pic;
-          }
-        } else {
-          // echo "not found";
-          $picture = base_url() . 'uploads/profile_image/user.png';
-        }
-        // echo "select * from tb_like WHERE contestent_id='$user_id' and matchid='$matchid' and like_status='like'";die();contestent_id='$user_id' and 
-        $likequery = $this->db->query("select count(*) as total_like from tb_like WHERE matchid='$matchid' and like_status='like'");
-        $likeresult = $likequery->row();
-        // print_r($likeresult);die();
-        $commentquery = $this->db->query("select count(*) as total_comments from tb_comment WHERE match_id='$matchid' and contestent_id!='0'");
-        $commentoutput = $commentquery->row();
-        $commoncommentquery = $this->db->query("select count(*) as total_commoncomments from tb_comment WHERE match_id='$matchid' AND `contestent_id` = 0");
-        $commoncommentoutput = $commoncommentquery->row();
-
-        $userlike = $this->db->query("select contestent_id from tb_like WHERE matchid='$matchid'");
-        // print_r($userlike->num_rows());die();
-        if ($userlike->num_rows() > 0) {
-          // echo "inside";die();
-          $userlikes = $userlike->row();
-          // print_r($userlikes);die();
-          $contid = $userlikes->contestent_id;
-          // echo $contid;die();
-          if ($contid == $uid) { //contested and rival are same
-            // echo "rival match";
-            $userrivallike = '1';
-            $useroppolike = '0';
-            $usercommonlike = '0';
-            $agree = '0';
-            $disagree = '0';
-          }
-          if ($contid == 0) {
-            // echo "rival match";
-            $userrivallike = '0';
-            $useroppolike = '0';
-            $usercommonlike = '1';
-            $commonquerylike = $this->db->query("select count(*) as common_like from tb_like WHERE contestent_id='0' and matchid='$matchid' and like_status='like'");
-            $commonquerylikeoutput = $commonquerylike->row();
-            $commonquerydislike = $this->db->query("select count(*) as common_dislike from tb_like WHERE contestent_id='0' and matchid='$matchid' and like_status='dislike'");
-            $commonquerydislikeoutput = $commonquerydislike->row();
-            $agree = $commonquerylikeoutput->common_like;
-            $disagree = $commonquerydislikeoutput->common_dislike;
-          }
-          if ($contid == $userid) {
-            // echo "oppo match";
-            $userrivallike = '0';
-            $useroppolike = '1';
-            $usercommonlike = '0';
-            $agree = '0';
-            $disagree = '0';
-          }
-        } else {
-          $userrivallike = '0';
-          $useroppolike = '0';
-          $usercommonlike = '0';
-          $agree = '0';
-          $disagree = '0';
-        }
-        $uploadedfile = $this->db->query("SELECT * FROM `tb_matchupload` WHERE `user_uploaded` = '$user_id' AND `matchid` = '$matchid'");
-        if ($uploadedfile->num_rows() > 0) {
-          $up_files = $uploadedfile->result_array();
-          if (!empty($up_files['0']['filename'])) {
-            $sfileid = $up_files['0']['mup_id'];
-            $sfiletype = $up_files['0']['filetype'];
-            if ($sfiletype == 'file') {
-              $senderfile = base_url() . 'uploads/Matchuploads/' . $up_files['0']['filename'];
+          $matchid = $result['matchid'];
+          $uid = $result['rival_id'];
+          $query = $this->db->query("select * from tb_user WHERE id='$uid'");
+          $output = $query->row();
+          if (!empty($output->profile_pic)) {
+            $string = $output->profile_pic;
+            if (preg_match('/[\'^£$%&*()}{@#~?><>,|=_+¬-]/', $string)) {
+              // one or more of the 'special characters' found in $string
+              // echo "found";
+              $pic = $output->profile_pic;
             } else {
-              $senderfile = $up_files['0']['filename'];
+              // echo "not found";
+              $pic = base_url() . 'uploads/profile_image/' . $output->profile_pic;
             }
-
-            //to find the cound of revealed closed match of this particular image
-            $scount_revealquery = $this->db->query("SELECT count(*) as sr_count from tb_match join tb_matchupload on tb_match.matchid=tb_matchupload.matchid WHERE tb_match.match_type='closed' and tb_match.seen_status='1' and tb_matchupload.old_mupid='$sfileid' and tb_matchupload.personal_matchid='$matchid'");
-            $scountrevealresult = $scount_revealquery->row();
-            $sr_count = $scountrevealresult->sr_count;
-            //
-            //to find the cound of anonymous closed match of this particular image
-            $scount_anonyquery = $this->db->query("SELECT count(*) as sa_count from tb_match join tb_matchupload on tb_match.matchid=tb_matchupload.matchid WHERE tb_match.match_type='closed' and tb_match.seen_status='0' and tb_matchupload.old_mupid='$sfileid' and tb_matchupload.personal_matchid='$matchid' ORDER BY `tb_match`.`matchid` DESC");
-            $scountanonyresult = $scount_anonyquery->row();
-            $sa_count = $scountanonyresult->sa_count;
-            //
-
-
-            //to find how many wins with this image for a closed match
-            $swincount_query = $this->db->query(" SELECT *,tb_match.matchid as id from tb_match join tb_matchupload on tb_match.matchid=tb_matchupload.matchid WHERE tb_match.match_type='closed' and tb_matchupload.old_mupid='$sfileid' ");
-            $resultwin = $swincount_query->result_array();
-            $swin = 0;
-            $sloss = 0;
-            foreach ($resultwin as $s) {
-              $mid = $s['id'];
-              $rid = $s['rival_id'];
-              $oppid = $s['opponent_id']; //user listing the personal match will always be opponent
-              $rivallike_query = $this->db->query("SELECT count(*) as ri_like FROM `tb_like` WHERE `matchid` = '$mid' AND `contestent_id` = '$rid'");
-              $rivallike = $rivallike_query->row();
-              $rlike = $rivallike->ri_like;
-              $oppolike_query = $this->db->query("SELECT count(*) as op_like FROM `tb_like` WHERE `matchid` = '$mid' AND `contestent_id` = '$oppid'");
-              $oppolike = $oppolike_query->row();
-              $olike = $oppolike->op_like;
-              if (($rlike == 0) && ($olike == 0)) {
-                $swin = $swin + 0;
-                $sloss = $sloss + 0;
-              } else if ($rlike > $olike) {
-                //rival win, then this match is lost for the personal match listing user
-                $swin = $swin + 0;
-                $sloss = $sloss + 1;
-              } else {
-                //oppo win,then this match is won for the personal match listing user
-                $swin = $swin + 1;
-                $sloss = $sloss + 0;
-              }
-            }
-            // echo $swin;echo $sloss;die();
-            //
-
-
           } else {
-            $sfiletype = "";
-            $sfileid = "0";
+            // echo "not found";
+            $pic = base_url() . 'uploads/profile_image/user.png';
+          }
+          $userid = $result['opponent_id'];
+          $queryresult = $this->db->query("select * from tb_user WHERE id='$userid'");
+          $outputdata = $queryresult->row();
+          if (!empty($outputdata->profile_pic)) {
+            $strings = $outputdata->profile_pic;
+            if (preg_match('/[\'^£$%&*()}{@#~?><>,|=_+¬-]/', $strings)) {
+              $picture = $outputdata->profile_pic;
+            } else {
+              $picture = base_url() . 'uploads/profile_image/' . $outputdata->profile_pic;
+            }
+          } else {
+            $picture = base_url() . 'uploads/profile_image/user.png';
+          }
+
+          $likeresult = $this->db->query("select count(*) as total_like from tb_like WHERE matchid='$matchid' and like_status='like'")->row();
+
+          $commentoutput = $this->db->query("select count(*) as total_comments from tb_comment WHERE match_id='$matchid' and contestent_id!='0'")->row();
+
+          $commoncommentoutput = $this->db->query("select count(*) as total_commoncomments from tb_comment WHERE match_id='$matchid' AND `contestent_id` = 0")->row();
+
+          $userlike = $this->db->query("select contestent_id from tb_like WHERE matchid='$matchid'");
+
+          if ($userlike->num_rows() > 0) {
+            $userlikes = $userlike->row();
+            $contid = $userlikes->contestent_id;
+            if ($contid == $uid) { //contested and rival are same
+              $userrivallike = '1';
+              $useroppolike = '0';
+              $usercommonlike = '0';
+              $agree = '0';
+              $disagree = '0';
+            }
+            if ($contid == 0) {
+              $userrivallike = '0';
+              $useroppolike = '0';
+              $usercommonlike = '1';
+              
+              $commonquerylikeoutput = $this->db->query("select count(*) as common_like from tb_like WHERE contestent_id='0' and matchid='$matchid' and like_status='like'")->row();
+             
+              $commonquerydislikeoutput = $this->db->query("select count(*) as common_dislike from tb_like WHERE contestent_id='0' and matchid='$matchid' and like_status='dislike'")->row();
+
+              $agree = $commonquerylikeoutput->common_like;
+              $disagree = $commonquerydislikeoutput->common_dislike;
+            }
+            if ($contid == $userid) {
+              $userrivallike = '0';
+              $useroppolike = '1';
+              $usercommonlike = '0';
+              $agree = '0';
+              $disagree = '0';
+            }
+          } else {
+            $userrivallike = '0';
+            $useroppolike = '0';
+            $usercommonlike = '0';
+            $agree = '0';
+            $disagree = '0';
+          }
+          $uploadedfile = $this->db->query("SELECT * FROM `tb_matchupload` WHERE `user_uploaded` = '$user_id' AND `matchid` = '$matchid'");
+          $total_like = 0;
+          if ($uploadedfile->num_rows() > 0) {
+            $up_files = $uploadedfile->result_array();
+            $compare_result = array();
+            foreach($up_files as $item){
+              $media_id = $item['mup_id'];
+              $media_type = $item['filetype'];
+              if ($media_type == 'file') {
+                $media = base_url() . 'uploads/Matchuploads/' . $item['filename'];
+              } else {
+                $media = $item['filename'];
+              }
+              //to find if this image is used for any type of closed match
+              $check_query = $this->db->query("SELECT * from tb_match join tb_matchupload on tb_match.matchid=tb_matchupload.matchid WHERE tb_match.match_type='closed' and tb_matchupload.old_mupid='$media_id' and tb_matchupload.personal_matchid='$matchid'");
+              if ($check_query->num_rows() > 0) {
+                $image_status = 1;
+              } else {
+                $image_status = 0;
+              }
+
+              //to find the cound of revealed closed match of this particular image
+              $count_revealquery = $this->db->query("SELECT count(*) as sr_count from tb_match join tb_matchupload on tb_match.matchid=tb_matchupload.matchid WHERE tb_match.match_type='closed' and tb_match.seen_status='1' and tb_matchupload.old_mupid='$media_id' and tb_matchupload.personal_matchid='$matchid'");
+              $countrevealresult = $count_revealquery->row();
+              $r_count = $countrevealresult->sr_count;
+
+              //to find the cound of anonymous closed match of this particular image
+              $count_anonyquery = $this->db->query("SELECT count(*) as sa_count from tb_match join tb_matchupload on tb_match.matchid=tb_matchupload.matchid WHERE tb_match.match_type='closed' and tb_match.seen_status='0' and tb_matchupload.old_mupid='$media_id' and tb_matchupload.personal_matchid='$matchid' ORDER BY `tb_match`.`matchid` DESC");
+              $scountanonyresult = $count_anonyquery->row();
+              $a_count = $scountanonyresult->sa_count;
+
+              //to find how many wins with this image for a closed match
+              $wincount_query = $this->db->query(" SELECT *,tb_match.matchid as id from tb_match join tb_matchupload on tb_match.matchid=tb_matchupload.matchid WHERE tb_match.match_type='closed' and tb_matchupload.old_mupid='$media_id' ");
+              $resultwin = $wincount_query->result_array();
+              $win = 0;
+              $loss = 0;
+              $winner_name = array();
+              $loser_name = array();
+
+              foreach ($resultwin as $s) {
+                $mid = $s['id'];
+                $created_at = $s['created_at'];
+                $matchquery = $this->db->query("SELECT * FROM `tb_matchupload` WHERE `matchid` ='$mid'");
+                $match_result = $matchquery->result_array();
+                $picarray = array();
+                foreach ($match_result as $sm) {
+                  $first_imageftype = $sm['filetype'];
+                  if (!empty($sm['filename'])) {
+                    if ($first_imageftype == 'file') {
+                      $first_image =  base_url() . 'uploads/Matchuploads/' . $sm['filename'];
+                    } else {
+                      $first_image = $sm['filename'];
+                    }
+                    $picarray[] = array(
+                      'closed_image' => $first_image
+                    );
+                  } else {
+                    $picarray[] = array(
+                      'closed_image' => " "
+                    );
+                  }
+                }
+                $id = $s['rival_id'];
+                $oppid = $s['opponent_id']; //user listing the personal match will always be opponent
+                $match_seenstatus = $s['seen_status'];
+                //to select the name of the winner and loser
+                $rivaldetails_query = $this->db->query("SELECT * FROM `tb_user` where id='$id'");
+                $rivaldetails = $rivaldetails_query->row();
+                $rivalname = $rivaldetails->name;
+                //
+                $rivallike_query = $this->db->query("SELECT count(*) as ri_like FROM `tb_like` WHERE `matchid` = '$mid' AND `contestent_id` = '$id'");
+                $rivallike = $rivallike_query->row();
+                $rlike = $rivallike->ri_like;
+                $oppolike_query = $this->db->query("SELECT count(*) as op_like FROM `tb_like` WHERE `matchid` = '$mid' AND `contestent_id` = '$oppid'");
+                $oppolike = $oppolike_query->row();
+                $olike = $oppolike->op_like;
+                $totalmatchlike = $rlike + $olike;
+                if (($rlike == 0) && ($olike == 0)) {
+                  $win = $win + 0;
+                  $loss = $loss + 0;
+                  $winner_name[] = array(
+                    'winner_name' => "",
+                    'closed_match_images' => " ",
+                    'closed_match_likes' => "",
+                    'created_at' => ""
+                  );
+
+                  $loser_name[] = array(
+                    'loser_name' => "",
+                    'closed_match_images' => " ",
+                    'closed_match_likes' => "",
+                    'created_at' => ""
+                  );
+                } else if ($rlike > $olike) {
+                  //rival win, then this match is lost for the personal match listing user
+                  $win = $win + 0;
+                  $loss = $loss + 1;
+                  if ($match_seenstatus == 1) //getting only revealed names
+                  {
+                    $winner_name[] = array(
+                      'winner_name' => $rivalname,
+                      'closed_match_images' => $picarray,
+                      'closed_match_likes' => $olike . '/' . $totalmatchlike,
+                      'created_at' => $created_at
+                    );
+                  }
+                } else {
+                  //oppo win,then this match is won for the personal match listing user
+                  $win = $swin + 1;
+                  $loss = $sloss + 0;
+                  if ($match_seenstatus == 1) {
+                    $loser_name[] = array(
+                      'loser_name' => $rivalname,
+                      'closed_match_images' => $picarray,
+                      'closed_match_likes' => $olike . '/' . $stotalmatchlike,
+                      'created_at' => $created_at
+                    );
+                  }
+                }
+              }
+              $likeoutput = $this->db->query("select count(*) as sender_like from tb_like WHERE image_id='$media_id' and matchid='$matchid' and like_status='like'")->row(); //likes of rival
+
+              $like = $likeoutput->sender_like;
+
+              if ($media_type == 'file') {
+                $file_extention = $result['filename'];
+                $exresult = explode(".", $file_extention);
+                $extension = $exresult[1];
+                if (($extension == 'mp3') || ($extension == 'amr') || ($extension == 'wav') || ($extension == 'wma') || ($extension == 'aac') || ($extension == 'ogg') || ($extension == 'aiff') || ($extension == 'aif')) {
+                  //sfiletype is audio
+                  $filetype = "audio";
+                } elseif (($extension == 'png') || ($extension == 'jpg') || ($extension == 'jpeg') || ($extension == 'gif') || ($extension == 'gif')) {
+                  //sfiletype is image
+                  $filetype = "image";
+                } elseif (($extension == 'mp4') || ($extension == 'mov') || ($extension == 'wmv') || ($extension == 'flv') || ($extension == 'aiv') || ($extension == 'mkv')) {
+                  //sfiletype is video
+                  $filetype = "video";
+                }
+              }else{
+                $filetype = $media_type;
+              }
+              $temp = array(
+                'id'        => $result['rival_id'],
+                'name' => $output->name,
+                'profile' => $pic,
+                'email' => $output->email,
+                'media' => $media,
+                'media_id' => $media_id,
+                'media_type' => $filetype,
+                'media_closedstatus' => $image_status,
+                'reveal_count' => $r_count,
+                'anonymous_count' => $a_count,
+                'media_win' => $win,
+                'media_loss' => $loss,
+                'media_winname' => $winner_name,
+                'media_lossname' => $loser_name,
+                'likecount' => $like,
+    
+              );
+              $total_like = $total_like+ $like;
+              array_push($compare_result, $temp);
+            }
+          } else {
             $senderfile = base_url() . 'assets/images/splash.jpg';
-            $sr_count = "0";
-            $sa_count = "0";
-            $swin = "0";
-            $sloss = "0";
-          }
-          if (!empty($up_files['1']['filename'])) {
-            $rfileid = $up_files['1']['mup_id'];
-            $rfiletype = $up_files['1']['filetype'];
-            if ($rfiletype == 'file') {
-              $receiverfile = base_url() . 'uploads/Matchuploads/' . $up_files['1']['filename'];
-            } else {
-              $receiverfile = $up_files['1']['filename'];
-            }
-
-
-            //to find the cound of revealed closed match of this particular image
-            $rcount_revealquery = $this->db->query("SELECT count(*) as rr_count from tb_match join tb_matchupload on tb_match.matchid=tb_matchupload.matchid WHERE tb_match.match_type='closed' and tb_match.seen_status='1' and tb_matchupload.old_mupid='$rfileid' and tb_matchupload.personal_matchid='$matchid'");
-            $rcountrevealresult = $rcount_revealquery->row();
-            $rr_count = $rcountrevealresult->rr_count;
-            //
-            //to find the cound of anonymous closed match of this particular image
-            $rcount_anonyquery = $this->db->query("SELECT count(*) as ra_count from tb_match join tb_matchupload on tb_match.matchid=tb_matchupload.matchid WHERE tb_match.match_type='closed' and tb_match.seen_status='0' and tb_matchupload.old_mupid='$rfileid' and tb_matchupload.personal_matchid='$matchid'");
-            $rcountanonyresult = $rcount_anonyquery->row();
-            $ra_count = $rcountanonyresult->ra_count;
-            //
-
-            //to find how many wins with this image for a closed match
-            $rwincount_query = $this->db->query(" SELECT *,tb_match.matchid as id from tb_match join tb_matchupload on tb_match.matchid=tb_matchupload.matchid WHERE tb_match.match_type='closed' and tb_matchupload.old_mupid='$rfileid'");
-            $result_win = $rwincount_query->result_array();
-            $rwin = 0;
-            $rloss = 0;
-            foreach ($result_win as $r) {
-              $m_id = $r['id'];
-              $r_id = $r['rival_id'];
-              $opp_id = $r['opponent_id']; //user listing the personal match will always be opponent
-              $rival_like_query = $this->db->query("SELECT count(*) as ri_like FROM `tb_like` WHERE `matchid` = '$m_id' AND `contestent_id` = '$r_id'");
-              $rival_like = $rival_like_query->row();
-              $r_like = $rival_like->ri_like;
-              $oppo_like_query = $this->db->query("SELECT count(*) as op_like FROM `tb_like` WHERE `matchid` = '$m_id' AND `contestent_id` = '$opp_id'");
-              $oppo_like = $oppo_like_query->row();
-              $o_like = $oppo_like->op_like;
-              if (($rlike == 0) && ($olike == 0)) {
-                $swin = $swin + 0;
-                $sloss = $sloss + 0;
-              } else if ($r_like > $o_like) {
-                //rival win, then this match is lost for the personal match listing user
-                $rwin = $rwin + 0;
-                $rloss = $rloss + 1;
-              } else {
-                //oppo win,then this match is won for the personal match listing user
-                $rwin = $rwin + 1;
-                $rloss = $rloss + 0;
-              }
-            }
-            //
-
-          } else {
-            $rfiletype = "";
-            $rfileid = " ";
             $receiverfile = base_url() . 'assets/images/splash.jpg';
-            $rr_count = "0";
-            $ra_count = "0";
-            $rwin = "0";
-            $rloss = "0";
           }
-        } else {
-          $senderfile = base_url() . 'assets/images/splash.jpg';
-          $receiverfile = base_url() . 'assets/images/splash.jpg';
-        }
-        if (!empty($sfileid)) {
-          $likequery = $this->db->query("select count(*) as sender_like from tb_like WHERE image_id='$sfileid' and matchid='$matchid' and like_status='like'"); //likes of rival
-          $likeoutput = $likequery->row();
-          $sender_like = $likeoutput->sender_like;
-        } else {
-          $sender_like = '0';
-        }
-        if (!empty($rfileid)) {
-          $likeoppquery = $this->db->query("select count(*) as receiver_like from tb_like WHERE image_id='$rfileid' and matchid='$matchid' and like_status='like'"); //likes of opponent
-          $likeoppoutput = $likeoppquery->row();
-          $receiver_like = $likeoppoutput->receiver_like;
-        }
-        // print_r($senderfile);die();
-        else {
-          $receiver_like = '0';
-        }
-        if (!empty($sfileid)) {
-          $sfileid = $sfileid;
-        } else {
-          $sfileid = 0;
-        }
-        if (!empty($rfileid)) {
-          $rfileid = $rfileid;
-        } else {
-          $rfileid = 0;
-        }
-        $data[] =  array(
-          'match_id'        => $result['matchid'],
-          'senderid'        => $result['rival_id'],
-          'sender_name' => $output->name,
-          'sender_profile' => $pic,
-          'sender_email' => $output->email,
-          'receiverid'      => $result['opponent_id'],
-          'receiver_name' => $outputdata->name,
-          'receiver_profile' => $picture,
-          'receiver_email' => $outputdata->email,
-          'sender_image' => $senderfile,
-          'sender_image_id' => $sfileid,
-          'sender_image_type' => $sfiletype,
+          $data[] =  array(
+            'match_id'        => $result['matchid'],
+            'description'       => $result['description'],
+            'time_duration'        => $result['time_duration'],
+            'caption'      => $result['caption'],
+            'category'       => $result['category'],
+            'match_start' => $result['replied_at'],
+            'match_end' => $result['match_end'],
+            'match_invitationsend' => $result['created_at'],
+            'likes' => $likeresult->total_like,
+            'compare_data' => $compare_result,
+            'total_likecount' => $total_like,
+            'total_comment' => $commentoutput->total_comments,
+            'total_commoncomments' => $commoncommentoutput->total_commoncomments,
+            'match_status' => '1',
+          );
+        // }else{
 
-          'sender_reveal_count' => $sr_count,
-          'sender_anonymous_count' => $sa_count,
-          'sender_image_win' => $swin,
-          'sender_image_loss' => $sloss,
-
-          'receiver_image' => $receiverfile,
-          'receiver_image_id' => $rfileid,
-          'receiver_image_type' => $rfiletype,
-
-          'receiver_reveal_count' => $rr_count,
-          'receiver_anonymous_count' => $ra_count,
-          'receiver_image_win' => $rwin,
-          'receiver_image_loss' => $rloss,
-
-          'description'       => $result['description'],
-          'time_duration'        => $result['time_duration'],
-          'caption'      => $result['caption'],
-          'category'       => $result['category'],
-          'match_start' => $result['replied_at'],
-          'match_end' => $result['match_end'],
-          'match_invitationsend' => $result['created_at'],
-          // 'user_profile'=>base_url() . 'uploads/profile_image/user.png',
-          'likes' => $likeresult->total_like,
-
-          'sender_likecount' => $sender_like,
-          'receiver_likecount' => $receiver_like,
-
-          'total_likecount' => $sender_like + $receiver_like,
-          'userliked_sender' => $userrivallike,
-          'userliked_receiver' => $useroppolike,
-          'userliked_common' => $usercommonlike,
-          'agree_count' => $agree,
-          'disagree_count' => $disagree,
-          'total_comment' => $commentoutput->total_comments,
-          'total_commoncomments' => $commoncommentoutput->total_commoncomments,
-          'match_status' => '1',
-        );
+        // }
       }
-
-      return $data;
     }
+    return $data;
   }
   public function get_personalmatch_link() //the matches that i have done competing my own medias.
   {

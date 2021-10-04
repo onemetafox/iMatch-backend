@@ -537,32 +537,43 @@ class User extends CI_Controller
     }
     public function PersonalMatch()
     {
-        // $result = $this->UserModel->get_personalmatch();
-
-        
+        $result = $this->UserModel->get_personalmatch();
         // echo $id;die();
-        $user_data['link'] = $this->UserModel->get_personalmatch_link();
-        $user_data['text'] = $this->UserModel->get_personalmatch_text();
-        $user_data['audio'] = $this->UserModel->get_personalmatch_audio();
-        $user_data['image'] = $this->UserModel->get_personalmatch_image();
-        $user_data['video'] = $this->UserModel->get_personalmatch_video();
+        // $user_data['link'] = $this->UserModel->get_personalmatch_link();
+        // $user_data['text'] = $this->UserModel->get_personalmatch_text();
+        // $user_data['audio'] = $this->UserModel->get_personalmatch_audio();
+        // $user_data['image'] = $this->UserModel->get_personalmatch_image();
+        // $user_data['video'] = $this->UserModel->get_personalmatch_video();
         // $user_data['fan_of'] = $this->UserModel->list_fanof($id);
 
-        if ((!empty($user_data['link'])) || (!empty($user_data['text'])) || (!empty($user_data['audio'])) || (!empty($user_data['image']))) {
+        // if ((!empty($user_data['link'])) || (!empty($user_data['text'])) || (!empty($user_data['audio'])) || (!empty($user_data['image']))) {
+        //     $data = array(
+        //         'status'  => true,
+        //         'message' => 'success',
+        //         'details' => $user_data
+
+        //     );
+        // } else {
+        //     $udata=array(
+        //         'link'=>[],
+        //         'text'=>[],
+        //         'audio'=>[],
+        //         'image'=>[],
+        //         'video'=>[],
+        //     );
+        //     $data = array(
+        //         'status'  => false,
+        //         'message' => 'currently you are having no personal matches',
+        //         'details' =>$udata
+        //     );
+        // }
+        if($result){
             $data = array(
                 'status'  => true,
                 'message' => 'success',
-                'details' => $user_data
-
+                'details' => $result
             );
-        } else {
-            $udata=array(
-                'link'=>[],
-                'text'=>[],
-                'audio'=>[],
-                'image'=>[],
-                'video'=>[],
-            );
+        }else{
             $data = array(
                 'status'  => false,
                 'message' => 'currently you are having no personal matches',
@@ -1950,12 +1961,12 @@ class User extends CI_Controller
     }
     public function ClosedMatch()
     {
-        // $result = $this->UserModel->get_closedmatch();
-        $result['link'] = $this->UserModel->get_closedmatch_link();
-        $result['text'] = $this->UserModel->get_closedmatch_text();
-        $result['audio'] = $this->UserModel->get_closedmatch_audio();
-        $result['image'] = $this->UserModel->get_closedmatch_image();
-        $result['video'] = $this->UserModel->get_closedmatch_video();
+        $result = $this->UserModel->get_closedmatch();
+        // $result['link'] = $this->UserModel->get_closedmatch_link();
+        // $result['text'] = $this->UserModel->get_closedmatch_text();
+        // $result['audio'] = $this->UserModel->get_closedmatch_audio();
+        // $result['image'] = $this->UserModel->get_closedmatch_image();
+        // $result['video'] = $this->UserModel->get_closedmatch_video();
         if (!empty($result)) {
             $post = array(
                 'status'  => true,
