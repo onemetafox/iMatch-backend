@@ -1226,7 +1226,7 @@ class UserModel  extends CI_Model
             $agree = $commonquerylikeoutput->common_like;
             $disagree = $commonquerydislikeoutput->common_dislike;
           }
-          if ($contid == $userid) {
+          if ($contid == $user_id) {
             $userrivallike = '0';
             $useroppolike = '1';
             $usercommonlike = '0';
