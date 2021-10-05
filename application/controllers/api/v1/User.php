@@ -1738,6 +1738,7 @@ class User extends CI_Controller
         $userid = $this->input->post('userid');
         $links = $this->input->post('links');
         $texts = $this->input->post('texts');
+        $sub_captions = $this->input->post('sub_caption');
 // print_r($texts);
         $matchid = $this->UserModel->create_personalmatch($userid);
         // print_r($this->input->post('filename'));die();

@@ -6851,6 +6851,7 @@ class UserModel  extends CI_Model
     $oppo_filename = $this->input->post('match_filename');
     $oppo_link = $this->input->post('match_link');
     $oppo_text = $this->input->post('match_text');
+    $select_medias = $this->input->post('select_medias');
     if (!empty($oppo_filename)) {
       $url = base_url() . 'uploads/Matchuploads/';
       $originalfilename = str_replace("$url", "", "$oppo_filename");
@@ -6875,21 +6876,27 @@ class UserModel  extends CI_Model
     $this->db->insert('tb_match', $data);
     if ($this->db->affected_rows() > 0) {
       $match_id = $this->db->insert_id();
-      $select = $this->db->query("select * from tb_matchupload where matchid='$pmatch_id' and filename='$originalfilename'");
-      if ($select->num_rows() > 0) {
-        $result_select = $select->row();
-        // print_r($result_select);
-        $filedata = array(
-          'matchid' => $match_id,
-          'user_uploaded' => $result_select->user_uploaded,
-          'filename' => $result_select->filename,
-          'filetype' => $result_select->filetype,
-          'personal_matchid' => $pmatch_id,
-          'old_mupid' => $result_select->mup_id,
-          'created_at' => $current_date
-        );
-        $this->savefile($filedata);
+      foreach($select_medias as $key => $item){
+        $media = $this->db->query("SELECT * FROM tb_matchupload WHERE mup_id = '".$item."'")->row_array();
+        $media['create_at'] = date("Y-m-d H:s:i");
+        $media['match_id'] = $match_id;
+        $this->savefile($media);
       }
+      // $select = $this->db->query("select * from tb_matchupload where matchid='$pmatch_id' and filename='$originalfilename'");
+      // if ($select->num_rows() > 0) {
+      //   $result_select = $select->row();
+      //   // print_r($result_select);
+      //   $filedata = array(
+      //     'matchid' => $match_id,
+      //     'user_uploaded' => $result_select->user_uploaded,
+      //     'filename' => $result_select->filename,
+      //     'filetype' => $result_select->filetype,
+      //     'personal_matchid' => $pmatch_id,
+      //     'old_mupid' => $result_select->mup_id,
+      //     'created_at' => $current_date
+      //   );
+      //   $this->savefile($filedata);
+      // }
       return $match_id;
     } else {
       return 'failed';
@@ -7357,7 +7364,7 @@ class UserModel  extends CI_Model
     $current_date    = date('Y-m-d H:i:s');
     $user_id = $this->input->post('userid');
     // $visitorid = $this->input->post('visitorid'); //only used to get the liked portion if the logged user is a visitor of other profile.
-    $result = $this->db->query("select * from tb_match join tb_matchupload on tb_match.matchid=tb_matchupload.matchid WHERE (rival_id='$user_id' or opponent_id='$user_id') and match_type='closed' and tb_matchupload.filetype='file' GROUP by tb_match.matchid");
+    $result = $this->db->query("select * from tb_match join tb_matchupload on tb_match.matchid=tb_matchupload.matchid WHERE (rival_id='$user_id' or opponent_id='$user_id') and match_type='closed' GROUP by tb_match.matchid");
     $result_array = $result->result_array();
     $data = array();
     foreach ($result_array as $result) {
