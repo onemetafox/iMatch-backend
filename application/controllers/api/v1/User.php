@@ -1758,6 +1758,12 @@ class User extends CI_Controller
                     'sub_caption' => $sub_caption
                 );
                 $results = $this->UserModel->savefile($data);
+                if ($results != "success") {
+                    $post = array(
+                        'status'  => false,
+                        'message' => 'Link Upload Failed'
+                    );
+                }
             }
         }
         if (!empty($texts) ) {
@@ -1772,6 +1778,12 @@ class User extends CI_Controller
                     'sub_caption' => $sub_caption
                 );
                 $results = $this->UserModel->savefile($data);
+                if ($results != "success") {
+                    $post = array(
+                        'status'  => false,
+                        'message' => 'Text Upload Failed'
+                    );
+                }
             }
         }
         if (!empty($_FILES['filename']['name'])) {
@@ -1802,15 +1814,15 @@ class User extends CI_Controller
                         'sub_caption' => $sub_caption
                     );
                     $results = $this->UserModel->savefile($data);
+                    if ($results != "success"){
+                        $post = array(
+                            'status'  => false,
+                            'message' => 'File Upload Failed'
+                        );
+                    }
                 }
             }
-        } else{
-            $post = array(
-                'status'  => false,
-                'message' => 'Failed'
-            );
         }
-
         echo  json_encode($post);
     }
     public function create_closedmatch()
@@ -1819,101 +1831,90 @@ class User extends CI_Controller
         $current_date    = date('Y-m-d H:i:s');
         $rival_userid = $this->input->post('rival_userid');
         $matchid = $this->UserModel->create_closedmatch();
-        $link = $this->input->post('link');
-        $text = $this->input->post('text');
-        if (!empty($_FILES['matchfile']['name'])){
-        $config['upload_path']   = './uploads/Matchuploads';
-        $config['allowed_types'] = '*';
-        $config['encrypt_name']  = true;
-        $this->load->library('upload', $config);
-        if (!$this->upload->do_upload('matchfile')) {
-            $error = array('error' => $this->upload->display_errors());
-            // print_r($error);
-            // $errors = array('status'        => false, 
-            // 'error' => 'You did not select a file to upload.');
-            echo  json_encode($error);
-        } else {
+        // $oppo_filename = $this->input->post('match_filename');
+        $links = json_decode($this->input->post('match_link'));
+        $texts = json_decode($this->input->post('match_text'));
+        $sub_captions = json_decode($this->input->post('sub_caption'));
 
-            //file is uploaded successfully
-            $upload_data = $this->upload->data();
-            //get the uploaded file name
-            $filename = $upload_data['file_name'];
-            // print_r($filename);
-        }
-    }
-    if (!empty($filename)) {
-        $ex_result = explode(".", $filename);
-        $extension = $ex_result[1];
-            $data = array(
-                'matchid' => $matchid,
-                'user_uploaded' => $rival_userid,
-                'filename' => $filename,
-                'filetype' => 'file',
-                'created_at' => $current_date
-            );
-            $results = $this->UserModel->savefile($data);
-            if ($results == "success") {
-                $post = array(
-                    'status'  => true,
-                    'message' => 'Successfully uploaded',
-                    'file_extension'=>$extension,
-                    'filename'=>base_url() . 'uploads/Matchuploads/' . $filename,
-                    
-                );
-            } else {
-                $post = array(
-                    'status'  => false,
-                    'message' => 'Failed'
-                );
-            }
-        } 
-       else if(!empty($link)){
-            $data = array(
-                'matchid' => $matchid,
-                'user_uploaded' => $rival_userid,
-                'filename' => $link,
-                'filetype' => 'link',
-                'created_at' => $current_date
-            );
-            $results = $this->UserModel->savefile($data);
-            if ($results == "success") {
-                $post = array(
-                    'status'  => true,
-                    'message' => 'Successfully uploaded'
-                );
-            } else {
-                $post = array(
-                    'status'  => false,
-                    'message' => 'Failed'
-                );
+        $post = array(
+            'status'  => true,
+            'message' => 'Successfully uploaded'
+        );
+
+        if (!empty($_FILES['filename']['name'])) {
+            $cpt_audio = count($_FILES['filename']['name']);
+            for ($i = 0; $i < $cpt_audio; $i++) {
+                $_FILES['file']['name'] = $_FILES['filename']['name'][$i];
+                $_FILES['file']['type'] = $_FILES['filename']['type'][$i];
+                $_FILES['file']['tmp_name'] = $_FILES['filename']['tmp_name'][$i];
+                $_FILES['file']['error'] = $_FILES['filename']['error'][$i];
+                $_FILES['file']['size'] = $_FILES['filename']['size'][$i];
+
+                $config['upload_path']   = './uploads/Matchuploads';
+                $config['allowed_types'] = '*';
+                $config['encrypt_name']  = true;
+                $this->load->library('upload', $config);
+                $sub_caption = $this->getSubCaption($sub_captions, 'file', $i);
+                if ($this->upload->do_upload('file')) {
+                    $uploadData = $this->upload->data();
+                    $filename = $uploadData['file_name'];
+                    $data = array(
+                        'matchid' => $matchid,
+                        'user_uploaded' => $userid,
+                        'filename' => $filename,
+                        'filetype' => 'file',
+                        'created_at' => $current_date,
+                        'sub_caption' => $sub_caption
+                    );
+                    $results = $this->UserModel->savefile($data);
+                    if ($results != "success"){
+                        $post = array(
+                            'status'  => false,
+                            'message' => 'File Upload Failed'
+                        );
+                    }
+                }
             }
         }
-        else if(!empty($text)){
-            $data = array(
-                'matchid' => $matchid,
-                'user_uploaded' => $rival_userid,
-                'filename' => $text,
-                'filetype' => 'text',
-                'created_at' => $current_date
-            );
-            $results = $this->UserModel->savefile($data);
-            if ($results == "success") {
-                $post = array(
-                    'status'  => true,
-                    'message' => 'Successfully uploaded'
+        if (!empty($links)) {
+            for ($i = 0; $i < count($links); $i++) {
+                $sub_caption = $this->getSubCaption($sub_captions, 'link', $i);
+                $data = array(
+                    'matchid' => $matchid,
+                    'user_uploaded' => $userid,
+                    'filename' => $links[$i]->value,
+                    'filetype' => 'link',
+                    'created_at' => $current_date,
+                    'sub_caption' => $sub_caption
                 );
-            } else {
-                $post = array(
-                    'status'  => false,
-                    'message' => 'Failed'
-                );
+                $results = $this->UserModel->savefile($data);
+                if ($results != "success") {
+                    $post = array(
+                        'status'  => false,
+                        'message' => 'Link Upload Failed'
+                    );
+                }
             }
         }
-        else {
-            $post = array(
-                'status'  => false,
-                'message' => 'Failed'
-            );
+        if (!empty($texts) ) {
+            for ($i = 0; $i < count($texts); $i++) {
+                $sub_caption = $this->getSubCaption($sub_captions, 'text', $i);
+                $data = array(
+                    'matchid' => $matchid,
+                    'user_uploaded' => $userid,
+                    'filename' => $texts[$i]->value,
+                    'filetype' => 'text',
+                    'created_at' => $current_date,
+                    'sub_caption' => $sub_caption
+                );
+                $results = $this->UserModel->savefile($data);
+                if ($results != "success") {
+                    $post = array(
+                        'status'  => false,
+                        'message' => 'Text Upload Failed'
+                    );
+                }
+            }
         }
         echo  json_encode($post);
     }

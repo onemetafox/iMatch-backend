@@ -6849,20 +6849,18 @@ class UserModel  extends CI_Model
     $rival_userid = $this->input->post('rival_userid');
     $opp_userid = $this->input->post('opponent_userid'); //chosed personal match users id
     $pmatch_id = $this->input->post('personal_matchid');
-    $oppo_filename = $this->input->post('match_filename');
-    $oppo_link = $this->input->post('match_link');
-    $oppo_text = $this->input->post('match_text');
-    $select_medias = $this->input->post('select_medias');
-    if (!empty($oppo_filename)) {
-      $url = base_url() . 'uploads/Matchuploads/';
-      $originalfilename = str_replace("$url", "", "$oppo_filename");
-    }
-    if (!empty($oppo_link)) {
-      $originalfilename = $oppo_link;
-    }
-    if (!empty($oppo_text)) {
-      $originalfilename = $oppo_text;
-    }
+    
+    $select_medias = json_decode($this->input->post('select_medias'));
+    // if (!empty($oppo_filename)) {
+    //   $url = base_url() . 'uploads/Matchuploads/';
+    //   $originalfilename = str_replace("$url", "", "$oppo_filename");
+    // }
+    // if (!empty($oppo_link)) {
+    //   $originalfilename = $oppo_link;
+    // }
+    // if (!empty($oppo_text)) {
+    //   $originalfilename = $oppo_text;
+    // }
     // print_r($originalfilename);die();
     $caption = $this->input->post('caption');
     $seen_status = $this->input->post('seen_status');
@@ -6881,6 +6879,7 @@ class UserModel  extends CI_Model
         $media = $this->db->query("SELECT * FROM tb_matchupload WHERE mup_id = '".$item."'")->row_array();
         $media['create_at'] = date("Y-m-d H:s:i");
         $media['match_id'] = $match_id;
+        $media['personal_matchid'] = $pmatch_id;
         $this->savefile($media);
       }
       // $select = $this->db->query("select * from tb_matchupload where matchid='$pmatch_id' and filename='$originalfilename'");
