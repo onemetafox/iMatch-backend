@@ -1248,6 +1248,7 @@ class UserModel  extends CI_Model
           foreach($up_files as $item){
             $media_id = $item['mup_id'];
             $media_type = $item['filetype'];
+            $sub_caption = $item['sub_caption'];
             if ($media_type == 'file') {
               $media = base_url() . 'uploads/Matchuploads/' . $item['filename'];
             } else {
@@ -1363,9 +1364,8 @@ class UserModel  extends CI_Model
             $likeoutput = $this->db->query("select count(*) as sender_like from tb_like WHERE image_id='$media_id' and matchid='$matchid' and like_status='like'")->row(); //likes of rival
 
             $like = $likeoutput->sender_like;
-
             if ($media_type == 'file') {
-              $file_extention = $result['filename'];
+              $file_extention = $item['filename'];
               $exresult = explode(".", $file_extention);
               $extension = $exresult[1];
               if (($extension == 'mp3') || ($extension == 'amr') || ($extension == 'wav') || ($extension == 'wma') || ($extension == 'aac') || ($extension == 'ogg') || ($extension == 'aiff') || ($extension == 'aif')) {
@@ -1397,6 +1397,7 @@ class UserModel  extends CI_Model
               'media_winname' => $winner_name,
               'media_lossname' => $loser_name,
               'likecount' => $like,
+              'sub_caption'=> $sub_caption
   
             );
             $total_like = $total_like+ $like;
@@ -7514,7 +7515,7 @@ class UserModel  extends CI_Model
           $like = $likeoutput->sender_like;
 
           if ($media_type == 'file') {
-            $file_extention = $result['filename'];
+            $file_extention = $item['filename'];
             $exresult = explode(".", $file_extention);
             $extension = $exresult[1];
             if (($extension == 'mp3') || ($extension == 'amr') || ($extension == 'wav') || ($extension == 'wma') || ($extension == 'aac') || ($extension == 'ogg') || ($extension == 'aiff') || ($extension == 'aif')) {
