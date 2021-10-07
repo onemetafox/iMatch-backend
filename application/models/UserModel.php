@@ -7383,6 +7383,7 @@ class UserModel  extends CI_Model
         
         foreach($up_files as $item){
           $media_id = $item['mup_id'];
+          $sub_caption = $item['sub_caption'];
           $media_type = $item['filetype'];
           if ($media_type == 'file') {
             $media = base_url() . 'uploads/Matchuploads/' . $item['filename'];
@@ -7528,7 +7529,8 @@ class UserModel  extends CI_Model
             'media_loss' => $loss,
             'media_winname' => $winner_name,
             'media_lossname' => $loser_name,
-            'likecount' => $like
+            'likecount' => $like,
+            'sub_caption'=>$sub_caption
           );
           $total_like = $total_like+ $like;
           array_push($medias, $temp);
