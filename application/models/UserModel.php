@@ -6877,6 +6877,7 @@ class UserModel  extends CI_Model
       $match_id = $this->db->insert_id();
       foreach($select_medias as $key => $item){
         $media = $this->db->query("SELECT * FROM tb_matchupload WHERE mup_id = '".$item."'")->row_array();
+        $media['old_mupid'] = $media['mup_id'];
         unset($media['mup_id']);
         $media['created_at'] = date("Y-m-d H:s:i");
         $media['matchid'] = $match_id;
