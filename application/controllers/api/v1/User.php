@@ -1832,10 +1832,11 @@ class User extends CI_Controller
         $rival_userid = $this->input->post('rival_userid');
         $matchid = $this->UserModel->create_closedmatch();
         // $oppo_filename = $this->input->post('match_filename');
-        $links = json_decode($this->input->post('match_link'));
-        $texts = json_decode($this->input->post('match_text'));
-        $sub_captions = json_decode($this->input->post('sub_caption'));
-
+        $links = json_decode($this->input->post('link'));
+        $texts = json_decode($this->input->post('text'));
+        $sub_captions = json_decode($this->input->post('sub_captions'));
+        // print_r($sub_captions);
+        // die;
         $post = array(
             'status'  => true,
             'message' => 'Successfully uploaded'
@@ -1860,7 +1861,7 @@ class User extends CI_Controller
                     $filename = $uploadData['file_name'];
                     $data = array(
                         'matchid' => $matchid,
-                        'user_uploaded' => $userid,
+                        'user_uploaded' => $rival_userid,
                         'filename' => $filename,
                         'filetype' => 'file',
                         'created_at' => $current_date,
@@ -1881,7 +1882,7 @@ class User extends CI_Controller
                 $sub_caption = $this->getSubCaption($sub_captions, 'link', $i);
                 $data = array(
                     'matchid' => $matchid,
-                    'user_uploaded' => $userid,
+                    'user_uploaded' => $rival_userid,
                     'filename' => $links[$i]->value,
                     'filetype' => 'link',
                     'created_at' => $current_date,
@@ -1901,7 +1902,7 @@ class User extends CI_Controller
                 $sub_caption = $this->getSubCaption($sub_captions, 'text', $i);
                 $data = array(
                     'matchid' => $matchid,
-                    'user_uploaded' => $userid,
+                    'user_uploaded' => $rival_userid,
                     'filename' => $texts[$i]->value,
                     'filetype' => 'text',
                     'created_at' => $current_date,

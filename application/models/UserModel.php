@@ -6877,26 +6877,12 @@ class UserModel  extends CI_Model
       $match_id = $this->db->insert_id();
       foreach($select_medias as $key => $item){
         $media = $this->db->query("SELECT * FROM tb_matchupload WHERE mup_id = '".$item."'")->row_array();
-        $media['create_at'] = date("Y-m-d H:s:i");
-        $media['match_id'] = $match_id;
+        unset($media['mup_id']);
+        $media['created_at'] = date("Y-m-d H:s:i");
+        $media['matchid'] = $match_id;
         $media['personal_matchid'] = $pmatch_id;
         $this->savefile($media);
       }
-      // $select = $this->db->query("select * from tb_matchupload where matchid='$pmatch_id' and filename='$originalfilename'");
-      // if ($select->num_rows() > 0) {
-      //   $result_select = $select->row();
-      //   // print_r($result_select);
-      //   $filedata = array(
-      //     'matchid' => $match_id,
-      //     'user_uploaded' => $result_select->user_uploaded,
-      //     'filename' => $result_select->filename,
-      //     'filetype' => $result_select->filetype,
-      //     'personal_matchid' => $pmatch_id,
-      //     'old_mupid' => $result_select->mup_id,
-      //     'created_at' => $current_date
-      //   );
-      //   $this->savefile($filedata);
-      // }
       return $match_id;
     } else {
       return 'failed';
@@ -7688,9 +7674,8 @@ class UserModel  extends CI_Model
           $likeoutput = $this->db->query("select count(*) as sender_like from tb_like WHERE image_id='$media_id' and matchid='$matchid' and like_status='like'")->row(); //likes of rival
 
           $like = $likeoutput->sender_like;
-
           if ($media_type == 'file') {
-            $file_extention = $result['filename'];
+            $file_extention = $item['filename'];
             $exresult = explode(".", $file_extention);
             $extension = $exresult[1];
             if (($extension == 'mp3') || ($extension == 'amr') || ($extension == 'wav') || ($extension == 'wma') || ($extension == 'aac') || ($extension == 'ogg') || ($extension == 'aiff') || ($extension == 'aif')) {
