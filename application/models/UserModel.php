@@ -858,20 +858,7 @@ class UserModel  extends CI_Model
         //   $this->db->insert('tb_matchupload', $imagedata );
         $check = $this->db->query("update tb_matchupload set matchid='$match_id' WHERE mup_id= $uploadid ");
 
-        $data = array(
-          'sender_id' => $rival_id,
-          'receiver_id' => $opponent_id,
-          'message' => $result_array->name . ' ' . 'Invited you from ' . $category . ' list to have a Match of ' . $this->input->post('time_duration') . ' duration', //receiver msg
-          'notification_status' => 'Match_invitation',
-          'request_id' => $match_id
-        );
-        $this->db->insert('tb_notification', $data);
-
-        $senderdevtoken = $result_array->device_token;
-        $sendermessage = 'You have Invited ' . $resultarray->name . ' from ' . $category . ' list to have a Match of ' . $this->input->post('time_duration') . ' duration';
-        $senderdevicetype = $result_array->device_type;
-        // echo $senderdevtoken; echo $sendermessage; echo $senderdevicetype.'senderdata';
-        $this->push($senderdevtoken, $sendermessage, $senderdevicetype);
+        
         $receiverdevtoken = $resultarray->device_token;
         $receivermessage = $result_array->name . ' ' . 'Invited you from ' . $category . ' list to have a Match of ' . $this->input->post('time_duration') . ' duration';
         $receiverdevicetype = $resultarray->device_type;
@@ -6675,6 +6662,42 @@ class UserModel  extends CI_Model
       return "notexist";
     }
   }
+  public function CreateOpenMatch($data){
+    $match['time_duration'] = $data['time_duration'];
+    $match['caption'] = $data['caption'];
+    $match['description'] = $data['description'];
+    $match['category'] = $data['category'];
+    $match['match_type'] = "open";
+    $match_id = $this->db->insert('tb_match', $match);
+
+    $rival_id = $data['rival_id'] = 3;
+    $query = "SELECT * FROM tb_user WHERE id = '".$rival_id."'";
+    $user = $this->db->query($query)->row();
+    foreach(json_decode($data['opponent_id']) as $item){
+      $notification = array(
+        'sender_id' => $rival_id,
+        'receiver_id' => $item->userid,
+        'message' => $user->name . ' ' . 'Invited you from ' . $match['category'] . ' list to have a Match of ' . $match['time_duration'] . ' duration', //receiver msg
+        'notification_status' => 'Match_invitation',
+        'request_id' => $match_id
+      );
+      $this->db->insert('tb_notification', $notification);
+  
+      $senderdevtoken = $user->device_token;
+      $sendermessage = 'You have Invited ' . $item->name . ' from ' . $match['category'] . ' list to have a Match of ' . $match['time_duration'] . ' duration';
+      $senderdevicetype = $user->device_type;
+      // echo $senderdevtoken; echo $sendermessage; echo $senderdevicetype.'senderdata';
+      $this->push($senderdevtoken, $sendermessage, $senderdevicetype);  
+      $matchuser = array(
+        'user_id' => $rival_id,
+        'opponent_id' => $item->userid,
+        'match_id'=> $match_id 
+      );
+      $this->db->insert('tb_matchusers', $matchuser);
+    }
+    return $match_id;
+    
+  }
   public function MatchUpload()
   {
     date_default_timezone_set('Asia/Kolkata');
@@ -6775,7 +6798,6 @@ class UserModel  extends CI_Model
     $userdetail_query = $this->db->query("SELECT * FROM `tb_user` WHERE id='$userid'");
     $userdetail =  $userdetail_query->row();
     $username = $userdetail->name;
-    //push notification for fans
     $fanquery = $this->db->query("SELECT * FROM `tb_fans` WHERE (req_from='$userid' or req_to='$userid') and category='fan'");
     $fanresult_array =  $fanquery->result_array();
     foreach ($fanresult_array as $results) {
