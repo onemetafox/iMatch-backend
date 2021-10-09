@@ -356,7 +356,7 @@ class UserModel  extends CI_Model
         $current_date    = date('Y-m-d H:i:s');
         $matches = $this->db->query("select count(*) as match_count from tb_match where invitation_status='accept' and (rival_id='$userid' or opponent_id='$userid')");
         $result_matches = $matches->row();
-        $matchesinvitation = $this->db->query("select count(*) as invitationcount from tb_match WHERE opponent_id='$userid' and match_type is null AND `invitation_status` IS NULL");
+        $matchesinvitation = $this->db->query("select count(*) as invitationcount from tb_matchusers WHERE opponent_id='$userid' and `accept_status` IS NULL");
         $result_matcheinvitation = $matchesinvitation->row();
         if (!empty($result['profile_pic'])) {
           $string = $result['profile_pic'];
@@ -911,103 +911,89 @@ class UserModel  extends CI_Model
   {
     date_default_timezone_set('Asia/Kolkata');
     $current_date    = date('Y-m-d H:i:s');
+    
     $reqid = $this->input->post('request_id');
     $status = $this->input->post('status');
-    // echo "select * from tb_match WHERE matchid='$reqid' and `invitation_status` IS NULL";die();
-    $result = $this->db->query("select * from tb_match WHERE matchid='$reqid' and `invitation_status` IS NULL");
+    $userid = $this->input->post('user_id');
+    
+    $this->db->query("update tb_matchusers set accept_status='$status' WHERE match_id='$reqid' AND opponent_id = '$userid'");
+    $matchuser = $this->db->query("SELECT * FROM tb_matchusers WHERE match_id='$reqid' AND opponent_id = '$userid'")->row();
+    $result = $this->db->query("select * from tb_match WHERE matchid='$reqid' and `match_type` = 'open'");
     if ($this->db->affected_rows() > 0) {
-      if ($status == 'accept') {
-        $match_status = 1;
-      } else {
-        $match_status = 0;
-      }
-      $check = $this->db->query("update tb_match set invitation_status='$status',replied_at='$current_date',match_status=$match_status WHERE matchid='$reqid'");
-
-      if ($this->db->affected_rows() > 0) {
-        $output =  $result->row();
-        $time = $output->time_duration;
-        if ($status == "accept") {
+      $output =  $result->row();
+      if($output->invitation_status != 'accept'){
+        if ($status == 'accept') {
+          $match_status = 1;
+          $time = $output->time_duration;
           $match_end = date('Y-m-d H:i:s', strtotime($time));
-        } else {
-          $match_end = ' ';
-        }
-        $check = $this->db->query("update tb_match set match_end='$match_end' WHERE matchid='$reqid'");
-        $from = $output->rival_id;
-        $to = $output->opponent_id;
-        $fromdata = $this->db->query("SELECT * FROM `tb_user` WHERE id='$from'");
-        $fdata = $fromdata->row();
-        $fromname = $fdata->name;
-        $todata = $this->db->query("SELECT * FROM `tb_user` WHERE id='$to'");
-        $tdata = $todata->row();
-        $toname = $tdata->name;
-        if ($status == "accept") { //only send push notification if accepted the request
-          //fans of rival start
-          $rivalfanquery = $this->db->query("SELECT * FROM `tb_fans` WHERE (req_from='$from' or req_to='$from') and category='fan'");
-          $rivalfanresult_array =  $rivalfanquery->result_array();
+          $check = $this->db->query("update tb_match set invitation_status='$status',replied_at='$current_date',  match_end='$match_end',match_status=$match_status WHERE matchid='$reqid'");
+        } 
+      }
+        
+      $from = $matchuser->opponent_id;
+      $to = $matchuser->user_id;
+      $fdata = $this->db->query("SELECT * FROM `tb_user` WHERE id='$from'")->row();
+      $fromname = $fdata->name;
+      $tdata = $this->db->query("SELECT * FROM `tb_user` WHERE id='$to'")->row();
+      $toname = $tdata->name;
+      if ($status == "accept") { //only send push notification if accepted the request
+        //fans of rival start
+        $rivalfanquery = $this->db->query("SELECT * FROM `tb_fans` WHERE (req_from='$from' or req_to='$from') and category='fan'");
+        $rivalfanresult_array =  $rivalfanquery->result_array();
 
-          foreach ($rivalfanresult_array as $results) {
-            if ($results['req_from'] == $from) {
-              $rivalfanuserid = $results['req_to'];
-            } else {
-              $rivalfanuserid = $results['req_from'];
-            }
-            $rivalfanresult_query = $this->db->query("SELECT * FROM `tb_user` WHERE id='$rivalfanuserid'");
-            if ($rivalfanresult_query->num_rows() > 0) {
-              $rivalfanoutput =  $rivalfanresult_query->row();
-              // print_r($rivalfanoutput);die();
-              // foreach ($rivalfanoutput as $result) {
-              $rivalfandevicetoken = $rivalfanoutput->device_token;
-              $rivalfandevicetype = $rivalfanoutput->device_type;
-              $pushmessage = "$fromname added a new open match with $toname, Open app to view the contest";
-              $datas = array(
-                'sender_id' => $from,
-                'receiver_id' => $to,
-                'message' => $pushmessage,
-                'notification_status' => 'fan_notification',
-                'request_id' => " "
-              );
-              $this->db->insert('tb_notification', $datas);
-              $this->push($rivalfandevicetoken, $pushmessage, $rivalfandevicetype);
-              // }
-            }
+        foreach ($rivalfanresult_array as $results) {
+          if ($results['req_from'] == $from) {
+            $rivalfanuserid = $results['req_to'];
+          } else {
+            $rivalfanuserid = $results['req_from'];
           }
-          //end
-          //fans of opponent start
-          $opponentfanquery = $this->db->query("SELECT * FROM `tb_fans` WHERE (req_from='$to' or req_to='$to') and category='fan'");
-          $opponentfanresult_array =  $opponentfanquery->result_array();
-
-          foreach ($opponentfanresult_array as $results) {
-            if ($results['req_from'] == $to) {
-              $opponentfanuserid = $results['req_to'];
-            } else {
-              $opponentfanuserid = $results['req_from'];
-            }
-            $opponentfanresult_query = $this->db->query("SELECT * FROM `tb_user` WHERE id='$opponentfanuserid'");
-            if ($opponentfanresult_query->num_rows() > 0) {
-              $opponentfanoutput =  $opponentfanresult_query->row();
-              //  print_r($opponentfanoutput);die();
-              //  foreach ($opponentfanoutput as $result) {
-              $opponentfandevicetoken = $opponentfanoutput->device_token;
-              $opponentfandevicetype = $opponentfanoutput->device_type;
-              $pushmessage = "$fromname added a new open match with $toname, Open app to view the contest";
-              $datas = array(
-                'sender_id' => $from,
-                'receiver_id' => $to,
-                'message' => $pushmessage,
-                'notification_status' => 'fan_notification',
-                'request_id' => " "
-              );
-              $this->db->insert('tb_notification', $datas);
-              $this->push($opponentfandevicetoken, $pushmessage, $opponentfandevicetype);
-              //  }
-            }
+          $rivalfanresult_query = $this->db->query("SELECT * FROM `tb_user` WHERE id='$rivalfanuserid'");
+          if ($rivalfanresult_query->num_rows() > 0) {
+            $rivalfanoutput =  $rivalfanresult_query->row();
+            $rivalfandevicetoken = $rivalfanoutput->device_token;
+            $rivalfandevicetype = $rivalfanoutput->device_type;
+            $pushmessage = "$fromname added a new open match with $toname, Open app to view the contest";
+            $datas = array(
+              'sender_id' => $from,
+              'receiver_id' => $to,
+              'message' => $pushmessage,
+              'notification_status' => 'fan_notification',
+              'request_id' => " "
+            );
+            $this->db->insert('tb_notification', $datas);
+            $this->push($rivalfandevicetoken, $pushmessage, $rivalfandevicetype);
           }
-          //end
         }
-        $query =  $this->db->query("select * from tb_user where id='$from'");
-        $queryto =  $this->db->query("select * from tb_user where id='$to'");
-        $result_array =  $query->row(); //sender
-        $resultarray =  $queryto->row(); //opponent
+        
+        $opponentfanquery = $this->db->query("SELECT * FROM `tb_fans` WHERE (req_from='$to' or req_to='$to') and category='fan'");
+        $opponentfanresult_array =  $opponentfanquery->result_array();
+
+        foreach ($opponentfanresult_array as $results) {
+          if ($results['req_from'] == $to) {
+            $opponentfanuserid = $results['req_to'];
+          } else {
+            $opponentfanuserid = $results['req_from'];
+          }
+          $opponentfanresult_query = $this->db->query("SELECT * FROM `tb_user` WHERE id='$opponentfanuserid'");
+          if ($opponentfanresult_query->num_rows() > 0) {
+            $opponentfanoutput =  $opponentfanresult_query->row();
+            $opponentfandevicetoken = $opponentfanoutput->device_token;
+            $opponentfandevicetype = $opponentfanoutput->device_type;
+            $pushmessage = "$fromname added a new open match with $toname, Open app to view the contest";
+            $datas = array(
+              'sender_id' => $from,
+              'receiver_id' => $to,
+              'message' => $pushmessage,
+              'notification_status' => 'fan_notification',
+              'request_id' => " "
+            );
+            $this->db->insert('tb_notification', $datas);
+            $this->push($opponentfandevicetoken, $pushmessage, $opponentfandevicetype);
+            
+          }
+        }
+        $result_array =  $this->db->query("select * from tb_user where id='$from'")->row();
+        $resultarray =  $this->db->query("select * from tb_user where id='$to'")->row();
         if ($status == "accept") {
           $message = "accepted";
           $sendermessage = 'Your Invitation is ' . $message . ' by ' . $resultarray->name;
@@ -1016,7 +1002,6 @@ class UserModel  extends CI_Model
           $sendermessage = 'Oops!  ' . $resultarray->name . ' has chickened Out.  Congrats!!  You Won Already! ';
         }
         $senderdevtoken = $result_array->device_token;
-        // $sendermessage = ;
         $senderdevicetype = $result_array->device_type;
         $data = array(
           'sender_id' => $to,
@@ -1041,8 +1026,6 @@ class UserModel  extends CI_Model
         $this->db->insert('tb_notification', $datas);
         $this->push($receiverdevtoken, $receivermessage, $receiverdevicetype);
         return "success";
-      } else {
-        return "fail";
       }
     } else {
       return "noinvitation";
@@ -1052,13 +1035,14 @@ class UserModel  extends CI_Model
   public function get_myinvitation()
   {
     $userid = $this->input->post('userid');
-    $result = $this->db->query("select * from tb_match WHERE opponent_id='$userid' AND `invitation_status` IS NULL AND `match_type` IS NULL");
+    $result = $this->db->query("select * from tb_matchusers  LEFT JOIN tb_match on tb_matchusers.match_id = tb_match.matchid
+     WHERE tb_matchusers.opponent_id='$userid' and tb_matchusers.`accept_status` IS NULL and tb_match.match_type='open'");
     if ($this->db->affected_rows() > 0) {
       $result_array = $result->result_array();
       $data = array();
       foreach ($result_array as $result) {
-        $uid = $result['rival_id'];
-        $matchid = $result['matchid'];
+        $uid = $result['user_id'];
+        $matchid = $result['match_id'];
         $query = $this->db->query("select * from tb_user WHERE id='$uid'");
         $output = $query->row();
         if (!empty($output->profile_pic)) {
@@ -1075,50 +1059,50 @@ class UserModel  extends CI_Model
           // echo "not found";
           $pic = base_url() . 'uploads/profile_image/user.png';
         }
-        $matchsenderfilequery = $this->db->query("select * from tb_matchupload WHERE user_uploaded='$userid' and matchid=$matchid"); //rival
-        if ($matchsenderfilequery->num_rows() > 0) {
-          $senderfileoutput = $matchsenderfilequery->row();
+        // $matchsenderfilequery = $this->db->query("select * from tb_matchupload WHERE user_uploaded='$userid' and matchid=$matchid"); //rival
+        // if ($matchsenderfilequery->num_rows() > 0) {
+        //   $senderfileoutput = $matchsenderfilequery->row();
 
-          $sfilename = $senderfileoutput->filename;
-          $sfiletype = $senderfileoutput->filetype;
-          if ($sfiletype == 'file') {
-            $sfile = base_url() . 'uploads/Matchuploads/' . $sfilename;
-          } else {
-            $sfile = $sfilename;
-          }
-        } else {
-          $sfile = base_url() . 'assets/images/splash.jpg';
-          $sfiletype = "";
-        }
-        $matchoppofilequery = $this->db->query("select * from tb_matchupload WHERE user_uploaded='$uid' and matchid=$matchid"); //rival
-        if ($matchoppofilequery->num_rows() > 0) {
-          $oppofileoutput = $matchoppofilequery->row();
+        //   $sfilename = $senderfileoutput->filename;
+        //   $sfiletype = $senderfileoutput->filetype;
+        //   if ($sfiletype == 'file') {
+        //     $sfile = base_url() . 'uploads/Matchuploads/' . $sfilename;
+        //   } else {
+        //     $sfile = $sfilename;
+        //   }
+        // } else {
+        //   $sfile = base_url() . 'assets/images/splash.jpg';
+        //   $sfiletype = "";
+        // }
+        // $matchoppofilequery = $this->db->query("select * from tb_matchupload WHERE user_uploaded='$uid' and matchid=$matchid"); //rival
+        // if ($matchoppofilequery->num_rows() > 0) {
+        //   $oppofileoutput = $matchoppofilequery->row();
 
-          $ofilename = $oppofileoutput->filename;
-          $ofiletype = $oppofileoutput->filetype;
-          if ($ofiletype == 'file') {
-            $ofile = base_url() . 'uploads/Matchuploads/' . $ofilename;
-          } else {
-            $ofile = $ofilename;
-          }
-        } else {
-          $ofile = base_url() . 'assets/images/splash.jpg';
-          $ofiletype = "";
-        }
+        //   $ofilename = $oppofileoutput->filename;
+        //   $ofiletype = $oppofileoutput->filetype;
+        //   if ($ofiletype == 'file') {
+        //     $ofile = base_url() . 'uploads/Matchuploads/' . $ofilename;
+        //   } else {
+        //     $ofile = $ofilename;
+        //   }
+        // } else {
+        //   $ofile = base_url() . 'assets/images/splash.jpg';
+        //   $ofiletype = "";
+        // }
         $data[] =  array(
           'match_id'        => $result['matchid'],
-          'senderid'        => $result['rival_id'],
-          'sender_name' => $output->name,
-          'receiverid'      => $result['opponent_id'],
+          // 'senderid'        => $result['rival_id'],
+          // 'sender_name' => $output->name,
+          // 'receiverid'      => $result['opponent_id'],
           'description'       => $result['description'],
           'time_duration'        => $result['time_duration'],
           'caption'      => $result['caption'],
           'category'       => $result['category'],
           'user_profile' => $pic,
-          'sender_image' => $sfile,
-          'sender_image_type' => $sfiletype,
-          'receiver_image' => $ofile,
-          'receiver_image_type' => $ofiletype
+          // 'sender_image' => $sfile,
+          // 'sender_image_type' => $sfiletype,
+          // 'receiver_image' => $ofile,
+          // 'receiver_image_type' => $ofiletype
         );
       }
 
@@ -6668,9 +6652,10 @@ class UserModel  extends CI_Model
     $match['description'] = $data['description'];
     $match['category'] = $data['category'];
     $match['match_type'] = "open";
-    $match_id = $this->db->insert('tb_match', $match);
+    $this->db->insert('tb_match', $match);
+    $match_id = $this->db->insert_id();
 
-    $rival_id = $data['rival_id'] = 3;
+    $rival_id = $data['rival_id'];
     $query = "SELECT * FROM tb_user WHERE id = '".$rival_id."'";
     $user = $this->db->query($query)->row();
     foreach(json_decode($data['opponent_id']) as $item){

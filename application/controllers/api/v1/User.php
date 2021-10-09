@@ -506,18 +506,18 @@ class User extends CI_Controller
     public function AllInvitation()
     {
         $result = $this->UserModel->get_myinvitation();
-        $files = $this->UserModel->getmyinvitation_files();
-        if (!empty($files)) {
-            $files = $files;
-        } else {
-            $files = [];
-        }
+        // $files = $this->UserModel->getmyinvitation_files();
+        // if (!empty($files)) {
+        //     $files = $files;
+        // } else {
+        //     $files = [];
+        // }
         if (!empty($result)) {
             $post = array(
                 'status'  => true,
                 'message' => 'Success',
-                'details' => $result,
-                'files' => $files
+                'details' => $result
+                // 'files' => $files
             );
         } else {
             $post = array(
@@ -548,46 +548,8 @@ class User extends CI_Controller
     }
     public function OpenMatch()
     {
-        // $result = $this->UserModel->get_openmatch();
-        // if (!empty($result)) {
-        //     $post = array(
-        //         'status'  => true,
-        //         'message' => 'Success',
-        //         'details' => $result
-        //     );
-        // } else {
-        //     $post = array(
-        //         'status'  => false,
-        //         'message' => 'currently you are having no open matches',
-        //         'details' => []
-        //     );
-        // }
-        $user_data['link'] = $this->UserModel->get_openmatch_link();
-        $user_data['text'] = $this->UserModel->get_openmatch_text();
-        $user_data['audio'] = $this->UserModel->get_openmatch_audio();
-        $user_data['image'] = $this->UserModel->get_openmatch_image();
-        $user_data['video'] = $this->UserModel->get_openmatch_video();
-        // print_r( $user_data['text']);die();
-        if ((!empty($user_data['link'])) || (!empty($user_data['text'])) || (!empty($user_data['audio'])) || (!empty($user_data['image']))) {
-            $data = array(
-                'status'  => true,
-                'message' => 'success',
-                'details' => $user_data
-            );
-        } else {
-            $udata=array(
-                'link'=>[],
-                'text'=>[],
-                'audio'=>[],
-                'image'=>[],
-                'video'=>[],
-            );
-            $data = array(
-                'status'  => false,
-                'message' => 'currently you are having no Open matches',
-                'details' =>$udata
-            );
-        }
+        $result = $this->UserModel->get_openmatch();
+       
         echo  json_encode($data);
     }
     public function OngoingMatch()
