@@ -992,41 +992,41 @@ class UserModel  extends CI_Model
             
           }
         }
-        $result_array =  $this->db->query("select * from tb_user where id='$from'")->row();
-        $resultarray =  $this->db->query("select * from tb_user where id='$to'")->row();
-        if ($status == "accept") {
-          $message = "accepted";
-          $sendermessage = 'Your Invitation is ' . $message . ' by ' . $resultarray->name;
-        } else {
-          $message = "rejected";
-          $sendermessage = 'Oops!  ' . $resultarray->name . ' has chickened Out.  Congrats!!  You Won Already! ';
-        }
-        $senderdevtoken = $result_array->device_token;
-        $senderdevicetype = $result_array->device_type;
-        $data = array(
-          'sender_id' => $to,
-          'receiver_id' => $from,
-          'message' => 'Your Invitation is ' . $message . ' by ' . $resultarray->name,
-          'notification_status' => 'match_reply',
-          'request_id' => $reqid
-        );
-
-        $this->db->insert('tb_notification', $data);
-        $this->push($senderdevtoken, $sendermessage, $senderdevicetype);
-        $receiverdevtoken = $resultarray->device_token;
-        $receivermessage = 'You have ' . $message . ' Invitation from ' . $result_array->name;
-        $receiverdevicetype = $resultarray->device_type;
-        $datas = array(
-          'sender_id' => $from,
-          'receiver_id' => $to,
-          'message' =>  'You have ' . $message . ' Invitation from ' . $result_array->name,
-          'notification_status' => 'match_reply',
-          'request_id' => $reqid
-        );
-        $this->db->insert('tb_notification', $datas);
-        $this->push($receiverdevtoken, $receivermessage, $receiverdevicetype);
-        return "success";
       }
+      $result_array =  $this->db->query("select * from tb_user where id='$from'")->row();
+      $resultarray =  $this->db->query("select * from tb_user where id='$to'")->row();
+      if ($status == "accept") {
+        $message = "accepted";
+        $sendermessage = 'Your Invitation is ' . $message . ' by ' . $resultarray->name;
+      } else {
+        $message = "rejected";
+        $sendermessage = 'Oops!  ' . $resultarray->name . ' has chickened Out.  Congrats!!  You Won Already! ';
+      }
+      $senderdevtoken = $result_array->device_token;
+      $senderdevicetype = $result_array->device_type;
+      $data = array(
+        'sender_id' => $to,
+        'receiver_id' => $from,
+        'message' => 'Your Invitation is ' . $message . ' by ' . $resultarray->name,
+        'notification_status' => 'match_reply',
+        'request_id' => $reqid
+      );
+
+      $this->db->insert('tb_notification', $data);
+      $this->push($senderdevtoken, $sendermessage, $senderdevicetype);
+      $receiverdevtoken = $resultarray->device_token;
+      $receivermessage = 'You have ' . $message . ' Invitation from ' . $result_array->name;
+      $receiverdevicetype = $resultarray->device_type;
+      $datas = array(
+        'sender_id' => $from,
+        'receiver_id' => $to,
+        'message' =>  'You have ' . $message . ' Invitation from ' . $result_array->name,
+        'notification_status' => 'match_reply',
+        'request_id' => $reqid
+      );
+      $this->db->insert('tb_notification', $datas);
+      $this->push($receiverdevtoken, $receivermessage, $receiverdevicetype);
+      return "success";
     } else {
       return "noinvitation";
     }
