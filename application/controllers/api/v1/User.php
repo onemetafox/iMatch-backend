@@ -550,17 +550,16 @@ class User extends CI_Controller
     {
         $result = $this->UserModel->get_openmatch();
        
-        echo  json_encode($data);
+        echo  json_encode($result);
     }
     public function OngoingMatch()
     {
-        // echo $id;die();
-        // $result = $this->UserModel->get_ongoingmatch();
-        $user_data['link'] = $this->UserModel->get_ongoingmatch_link();
-        $user_data['text'] = $this->UserModel->get_ongoingmatch_text();
-        $user_data['audio'] = $this->UserModel->get_ongoingmatch_audio();
-        $user_data['image'] = $this->UserModel->get_ongoingmatch_image();
-        $user_data['video'] = $this->UserModel->get_ongoingmatch_video();
+        $result = $this->UserModel->get_ongoingmatch();
+        // $user_data['link'] = $this->UserModel->get_ongoingmatch_link();
+        // $user_data['text'] = $this->UserModel->get_ongoingmatch_text();
+        // $user_data['audio'] = $this->UserModel->get_ongoingmatch_audio();
+        // $user_data['image'] = $this->UserModel->get_ongoingmatch_image();
+        // $user_data['video'] = $this->UserModel->get_ongoingmatch_video();
         if ((!empty($user_data['link'])) || (!empty($user_data['text'])) || (!empty($user_data['audio'])) || (!empty($user_data['image']))) {
             $data = array(
                 'status'  => true,
