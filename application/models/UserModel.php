@@ -336,63 +336,63 @@ class UserModel  extends CI_Model
   }
   public function getprofilepic($userid)
   {
-    $query =  $this->db->query("select * from tb_user where id='$userid'");
-    if ($this->db->affected_rows() > 0) {
-      $result_array =  $query->result_array();
-      $data = array();
-      foreach ($result_array as $result) {
-        $userid = $result['id'];
-        $squad = $this->db->query("select count(*) as squad_count from tb_bestie where (req_from='$userid' or req_to='$userid') and category='squad' and req_status='1'");
-        $result_squad = $squad->row();
-        // print_r($result_squad);
-        // echo ;die();
-        $bestie = $this->db->query("select count(*) as bestie_count from tb_bestie where (req_from='$userid' or req_to='$userid') and category='bestie' and req_status='1'");
-        $result_bestie = $bestie->row();
-        $fan = $this->db->query("select count(*) as fan_count from tb_fans where (req_from='$userid' or req_to='$userid') and category='fan'");
-        $result_fan = $fan->row();
-        $fanof = $this->db->query("select count(*) as fanof_count from tb_fans where (req_from='$userid' or req_to='$userid') and category='fan_of'");
-        $result_fanof = $fanof->row();
-        date_default_timezone_set('Asia/Kolkata');
-        $current_date    = date('Y-m-d H:i:s');
-        $matches = $this->db->query("select count(*) as match_count from tb_match where invitation_status='accept' and (rival_id='$userid' or opponent_id='$userid')");
-        $result_matches = $matches->row();
-        $matchesinvitation = $this->db->query("select count(*) as invitationcount from tb_matchusers WHERE opponent_id='$userid' and `accept_status` IS NULL");
-        $result_matcheinvitation = $matchesinvitation->row();
-        if (!empty($result['profile_pic'])) {
-          $string = $result['profile_pic'];
-          if (preg_match('/[\'^£$%&*()}{@#~?><>,|=_+¬-]/', $string)) {
-            // one or more of the 'special characters' found in $string
-            // echo "found";
-            $pic = $result['profile_pic'];
-          } else {
-            // echo "not found";
-            $pic = base_url() . 'uploads/profile_image/' . $result['profile_pic'];
-          }
-        } else {
-          // echo "not found";
-          $pic = base_url() . 'uploads/profile_image/user.png';
-        }
-        $data[] =  array(
-          'userid'        => $result['id'],
-          'name'      => $result['name'],
-          'email'       => $result['email'],
-          'university_name' => $result['university_name'],
-          'phone_number' => $result['phone'],
-          'country_code' => $result['isocode'],
-          'bio' => $result['bio'],
-          'gender' => $result['gender'],
-          'profile_pic'      => $pic,
-          'squad_count' => $result_squad->squad_count,
-          'bestie_count' => $result_bestie->bestie_count,
-          'fans_count' => $result_fan->fan_count,
-          'fans_of_count' => $result_fanof->fanof_count,
-          'matches_count' => $result_matches->match_count,
-          'matches_invitationcount' => $result_matcheinvitation->invitationcount
-        );
-      }
+    $result =  $this->db->query("select * from tb_user where id='$userid'")->row_array();
+    $data = array();
+    $userid = $result['id'];
+    $squad = $this->db->query("select count(*) as squad_count from tb_bestie where (req_from='$userid' or req_to='$userid') and category='squad' and req_status='1'");
+    $result_squad = $squad->row();
+    // print_r($result_squad);
+    // echo ;die();
+    $bestie = $this->db->query("select count(*) as bestie_count from tb_bestie where (req_from='$userid' or req_to='$userid') and category='bestie' and req_status='1'");
+    $result_bestie = $bestie->row();
+    $fan = $this->db->query("select count(*) as fan_count from tb_fans where (req_from='$userid' or req_to='$userid') and category='fan'");
+    $result_fan = $fan->row();
+    $fanof = $this->db->query("select count(*) as fanof_count from tb_fans where (req_from='$userid' or req_to='$userid') and category='fan_of'");
+    $result_fanof = $fanof->row();
+    date_default_timezone_set('Asia/Kolkata');
+    $current_date    = date('Y-m-d H:i:s');
+    $matches = $this->db->query("select count(*) as match_count from tb_match where invitation_status='accept' and (rival_id='$userid' or opponent_id='$userid')");
+    $result_matches = $matches->row();
+    $matchesinvitation = $this->db->query("select count(*) as invitationcount from tb_matchusers WHERE opponent_id='$userid' and `accept_status` IS NULL");
+    $result_matcheinvitation = $matchesinvitation->row();
+    //pending match count
+    $openmatch_count = $this->db->query("SELECT COUNT(*) as count from tb_match WHERE rival_id = '$userid' AND invitation_status IS NULL AND match_type = 'open'")->row()->count;
 
-      return $data;
+    if (!empty($result['profile_pic'])) {
+      $string = $result['profile_pic'];
+      if (preg_match('/[\'^£$%&*()}{@#~?><>,|=_+¬-]/', $string)) {
+        // one or more of the 'special characters' found in $string
+        // echo "found";
+        $pic = $result['profile_pic'];
+      } else {
+        // echo "not found";
+        $pic = base_url() . 'uploads/profile_image/' . $result['profile_pic'];
+      }
+    } else {
+      // echo "not found";
+      $pic = base_url() . 'uploads/profile_image/user.png';
     }
+    $total_notification = $result_squad->squad_count + $result_fan->fan_count +$openmatch_count + $result_matcheinvitation->invitationcount;
+    $data[] =  array(
+      'userid'        => $result['id'],
+      'name'      => $result['name'],
+      'email'       => $result['email'],
+      'university_name' => $result['university_name'],
+      'phone_number' => $result['phone'],
+      'country_code' => $result['isocode'],
+      'bio' => $result['bio'],
+      'gender' => $result['gender'],
+      'profile_pic'      => $pic,
+      'squad_count' => $result_squad->squad_count,
+      'bestie_count' => $result_bestie->bestie_count,
+      'fans_count' => $result_fan->fan_count,
+      'fans_of_count' => $result_fanof->fanof_count,
+      'matches_count' => $result_matches->match_count,
+      'openmatch_count' => $openmatch_count,
+      'matches_invitationcount' => $result_matcheinvitation->invitationcount,
+      'total_notification' => $total_notification
+    );
+    return $data;
   }
   public function add_bestie()
   {
