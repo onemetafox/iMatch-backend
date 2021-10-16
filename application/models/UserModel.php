@@ -205,6 +205,41 @@ class UserModel  extends CI_Model
     }
     return $data;
   }
+  public function getPendingMatch($user_id){
+    $result = $this->db->query("SELECT * FROM tb_match WHERE rival_id = '$user_id' AND match_type = 'open' AND invitation_status IS NULL")->result_array();
+    $data = array();
+    foreach($result as $item){
+      $status = false;
+      $users = $this->db->query("SELECT tb_matchusers.accept_status, tb_user.* FROM tb_matchusers 
+      LEFT JOIN tb_user ON tb_user.id = tb_matchusers.opponent_id WHERE match_id = '" .$item['matchid']."' AND user_id = '$user_id'")->result_array();
+      $tem_user = array();
+      foreach($users as $user){
+        if (!empty($user['profile_pic'])) {
+          $string = $user['profile_pic'];
+          if (preg_match('/[\'^£$%&*()}{@#~?><>,|=_+¬-]/', $string)) {
+            // one or more of the 'special characters' found in $string
+            // echo "found";
+            $pic = $user['profile_pic'];
+          } else {
+            // echo "not found";
+            $pic = base_url() . 'uploads/profile_image/' . $user['profile_pic'];
+          }
+        } else {
+          // echo "not found";
+          $pic = base_url() . 'uploads/profile_image/user.png';
+        }
+        $user['pic'] = $pic;
+        if($user['accept_status']){
+          $status = true;
+        }
+        array_push($tem_user, $user);
+      }
+      $item['status'] = $status;
+      $item['users'] = $tem_user;
+      array_push($data, $item);
+    }
+    return $data;
+  }
   public function listusers()
   {
     $id = $this->input->post('userid');

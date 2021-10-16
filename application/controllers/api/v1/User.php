@@ -266,6 +266,25 @@ class User extends CI_Controller
             echo  json_encode($data);
         }
     }
+    public function get_pending_match($user_id){
+        $result = $this->UserModel->getPendingMatch($user_id);
+        if (!empty($result)) {
+            $post = array(
+                'status'  => true,
+                'message' => 'success',
+                'details' => $result
+
+            );
+        } else {
+            $post = array(
+                'status'  => false,
+                'message' => 'failed',
+                'details' => []
+            );
+        }
+
+        echo  json_encode($post);
+    }
     public function get_profile_pic($userid)
     {
 
