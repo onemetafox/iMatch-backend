@@ -538,6 +538,55 @@ class UserModel  extends CI_Model
     }
     return $data;
   }
+  public function startPendingMatch($matchid){
+    $openmatch = $this->db->query("select * from tb_match WHERE matchid='$matchid' and `match_type` = 'open'")->row();
+    $time = $openmatch->time_duration;
+    $current_date = date("Y-m-d H:s:i");
+    $match_end = date('Y-m-d H:i:s', strtotime($time));
+    $check = $this->db->query("update tb_match set invitation_status='accept', replied_at='$current_date',  match_end='$match_end',match_status='1' WHERE matchid='$matchid'");
+    return 'success';
+
+    // $result = $this->db->query("select * from  tb_fans WHERE fan_id='$reqid'");
+    // if ($this->db->affected_rows() > 0) {
+    //   $check = $this->db->query("update tb_fans set req_status='$status' WHERE fan_id='$reqid'");
+    //   if ($this->db->affected_rows() > 0) {
+    //     $output =  $result->row();
+    //     $from = $output->req_from;
+    //     $to = $output->req_to;
+    //     $query =  $this->db->query("select * from tb_user where id='$from'"); //sender
+    //     $queryto =  $this->db->query("select * from tb_user where id='$to'"); //receiver
+    //     $result_array =  $query->row();
+    //     $senderdevtoken = $result_array->device_token;
+    //     $sendermessage = 'Your request is ' . $stat . ' by ' . $result_array->name;
+    //     $senderdevicetype = $result_array->device_type;
+    //     $resultarray =  $queryto->row();
+    //     $receiverdevtoken = $resultarray->device_token;
+    //     $receivermessage = 'You have ' . $stat . ' request from' . $resultarray->name;
+    //     $receiverdevicetype = $resultarray->device_type;
+    //     $data = array(
+    //       'sender_id' => $this->input->post('from'),
+    //       'receiver_id' => $this->input->post('to'),
+    //       'message' => 'Your request is ' . $stat . ' by ' . $result_array->name,
+    //       'notification_status' => 'accept_or_reject_' . $category,
+    //       'request_id' => $reqid
+    //     );
+    //     $this->db->insert('tb_notification', $data);
+    //     $this->push($senderdevtoken, $sendermessage, $senderdevicetype);
+    //     $datas = array(
+    //       'sender_id' => $this->input->post('to'),
+    //       'receiver_id' => $this->input->post('from'),
+    //       'message' =>  'You have ' . $status . ' request from' . $resultarray->name,
+    //       'notification_status' => 'accept_or_reject_' . $category,
+    //       'request_id' => $reqid
+    //     );
+    //     $this->db->insert('tb_notification', $datas);
+    //     $this->push($receiverdevtoken, $receivermessage, $receiverdevicetype);
+    //     return "success";
+    //   } else {
+    //     return "fail";
+    //   }
+    // }
+  }
   public function accept_or_reject()
   {
     $reqid = $this->input->post('request_id');
@@ -1901,147 +1950,131 @@ class UserModel  extends CI_Model
     $current_date    = date('Y-m-d H:i:s');
     $user_id = $this->input->post('userid');
     $visitorid = $this->input->post('visitorid'); //only used to get the liked portion if the logged user is a visitor of other profile.
-    $query = "SELECT  * FROM `tb_matchusers`
-              LEFT JOIN tb_match ON tb_matchusers.match_id = tb_match.matchid 
-              WHERE tb_matchusers.accept_status = 'accept'  AND tb_match.match_end >= '$current_date' AND ( tb_matchusers.user_id = '$user_id' OR tb_matchusers.opponent_id = '$user_id' ) 
-                AND tb_match.match_type = 'open' AND tb_match.match_status = 1 AND	tb_match.invitation_status = 'accept'";
+    $query = "SELECT * FROM tb_match WHERE invitation_status = 'accept' and match_type = 'open' and match_end> CURRENT_DATE()";
     $result_array = $this->db->query($query)->result_array();
     $data = array();
     foreach ($result_array as $result) {
-      $uid = $result['rival_id']; //rival 
-      // echo $uid;
-      $oppouid = $result['opponent_id']; //opponent
-      // echo $oppouid;
-      $matchid = $result['matchid'];
-      $query = $this->db->query("select * from tb_user WHERE id='$uid'"); //rival
-      $output = $query->row();
-      $matchsenderfilequery = $this->db->query("select * from tb_matchupload WHERE user_uploaded='$uid' and matchid=$matchid"); //rival
-      if ($matchsenderfilequery->num_rows() > 0) {
-        $senderfileoutput = $matchsenderfilequery->row();
+      $compare_data = array();
+      $user_id = $result['rival_id']; //rival 
+      $match_id = $result['matchid'];
+      $user = $this->db->query("SELECT * FROM tb_user WHERE id = '$user_id'")->row_array();
 
-        $sfilename = $senderfileoutput->filename;
-        $sfiletype = $senderfileoutput->filetype;
-        if ($sfiletype == 'file') {
-          $sfile = base_url() . 'uploads/Matchuploads/' . $sfilename;
-        } else {
-          $sfile = $sfilename;
-        }
-      } else {
-        $sfile = base_url() . 'assets/images/splash.jpg';
-        $sfiletype = "";
-      }
-      $matchoppofilequery = $this->db->query("select * from tb_matchupload WHERE user_uploaded='$oppouid' and matchid=$matchid"); //rival
-      if ($matchoppofilequery->num_rows() > 0) {
-        $oppofileoutput = $matchoppofilequery->row();
-
-        $ofilename = $oppofileoutput->filename;
-        $ofiletype = $oppofileoutput->filetype;
-        if ($ofiletype == 'file') {
-          $ofile = base_url() . 'uploads/Matchuploads/' . $ofilename;
-        } else {
-          $ofile = $ofilename;
-        }
-      } else {
-        $ofile = base_url() . 'assets/images/splash.jpg';
-        $ofiletype = "";
-      }
-      $likequery = $this->db->query("select count(*) as sender_like from tb_like WHERE contestent_id='$uid' and matchid='$matchid'");
-      $likeoutput = $likequery->row();
-      $sender_like = $likeoutput->sender_like;
-      $resultquery = $this->db->query("select * from tb_user WHERE id='$oppouid'");
-      $resultoutput = $resultquery->row();
-      $likeoppquery = $this->db->query("select count(*) as receiver_like from tb_like WHERE contestent_id='$oppouid' and matchid='$matchid'");
-      $likeoppoutput = $likeoppquery->row();
-      $receiver_like = $likeoppoutput->receiver_like;
-      // die();
-
-      if (!empty($output->profile_pic)) {
-        $string = $output->profile_pic;
+      if (!empty($user['profile_pic'])) {
+        $string = $user['profile_pic'];
         if (preg_match('/[\'^£$%&*()}{@#~?><>,|=_+¬-]/', $string)) {
-          // one or more of the 'special characters' found in $string
-          // echo "found";
-          $pic = $output->profile_pic;
+          $pic = $user['profile_pic'];
         } else {
-          // echo "not found";
-          $pic = base_url() . 'uploads/profile_image/' . $output->profile_pic;
+          $pic = base_url() . 'uploads/profile_image/' . $user['profile_pic'];
         }
       } else {
-        // echo "not found";
         $pic = base_url() . 'uploads/profile_image/user.png';
       }
+      $user['pic'] = $pic;
+      $user['like_count'] = $this->db->query("SELECT COUNT(*) count FROM tb_like WHERE matchid = '$match_id' AND contestent_id = '$user_id' AND like_status = 'like'")->row()->count;
+      $user['dislike_count'] = $this->db->query("SELECT COUNT(*) count FROM tb_like WHERE matchid = '$match_id' AND contestent_id = '$user_id' AND like_status = 'dislike'")->row()->count;
+      $mediafiles = $this->db->query("SELECT * FROM tb_matchupload WHERE user_uploaded='$user_id' AND matchid = '$match_id'")->result_array();
+      foreach($mediafiles as $index=> $media){
+        $filename = $media['filename'];
+        $filetype = $media['filetype'];
+        if ($filetype == 'file') {
+          $file = base_url() . 'uploads/Matchuploads/' . $sfilename;
+        } else {
+          $file = $filename;
+        }
+        $mediafiles[$index]['file_path'] = $file;
+      }
+      $user['mediafiles'] = $mediafiles;
+      array_push($compare_data, $user);
 
-      if (!empty($resultoutput->profile_pic)) {
-        $string = $resultoutput->profile_pic;
-        if (preg_match('/[\'^£$%&*()}{@#~?><>,|=_+¬-]/', $string)) {
-          // one or more of the 'special characters' found in $string
-          // echo "found";
-          $picture = $resultoutput->profile_pic;
-        } else {
-          // echo "not found";
-          $picture = base_url() . 'uploads/profile_image/' . $resultoutput->profile_pic;
-        }
-      } else {
-        // echo "not found";
-        $picture = base_url() . 'uploads/profile_image/user.png';
-      }
-      if (!empty($visitorid)) {
-        $visitoruserlike = $this->db->query("select contestent_id from tb_like WHERE user_liked='$visitorid' and matchid='$matchid'");
-        if ($visitoruserlike->num_rows() > 0) {
-          $visitoruserlikes = $visitoruserlike->row();
-          $cont_id = $visitoruserlikes->contestent_id;
-          if ($cont_id == $uid) {
-            // echo "rival match";
-            $visitor_userrivallike = '1';
-            $visitor_useroppolike = '0';
-          }
-          if ($cont_id == $oppouid) {
-            // echo "oppo match";
-            $visitor_userrivallike = '0';
-            $visitor_useroppolike = '1';
-          }
-          if ($cont_id == 0) {
-            // echo "open like ";
-            $visitor_userrivallike = '0';
-            $visitor_useroppolike = '0';
+      $opponents = $this->db->query("SELECT * FROM tb_matchusers WHERE match_id = '$match_id' AND accept_status = 'accept'")->result_array();
+      foreach($opponents as $oppoent){
+        $user = $this->db->query("SELECT * FROM tb_user WHERE id = '".$oppoent['opponent_id']."'")->row_array();
+
+        if (!empty($user['profile_pic'])) {
+          $string = $user['profile_pic'];
+          if (preg_match('/[\'^£$%&*()}{@#~?><>,|=_+¬-]/', $string)) {
+            $pic = $user['profile_pic'];
+          } else {
+            $pic = base_url() . 'uploads/profile_image/' . $user['profile_pic'];
           }
         } else {
-          $visitor_userrivallike = '0';
-          $visitor_useroppolike = '0';
+          $pic = base_url() . 'uploads/profile_image/user.png';
         }
-      } else {
-        $visitor_userrivallike = '0';
-        $visitor_useroppolike = '0';
+        $user['pic'] = $pic;
+        $match_like_count = $this->db->query("SELECT COUNT(*) count FROM tb_like WHERE matchid = '$match_id' AND contestent_id = '".$oppoent['opponent_id']."' AND like_status = 'like'")->row()->count;
+        $match_dislike_count = $this->db->query("SELECT COUNT(*) count FROM tb_like WHERE matchid = '$match_id' AND contestent_id = '".$oppoent['opponent_id']."' AND like_status = 'dislike'")->row()->count;
+        $mediafiles = $this->db->query("SELECT * FROM tb_matchupload WHERE user_uploaded='$user_id' AND matchid = '$match_id'")->result_array();
+        foreach($mediafiles as $index=> $media){
+          $filename = $media['filename'];
+          $filetype = $media['filetype'];
+          if ($filetype == 'file') {
+            $file = base_url() . 'uploads/Matchuploads/' . $sfilename;
+          } else {
+            $file = $filename;
+          }
+          $mediafiles[$index]['file_path'] = $file;
+        }
+        $user['mediafiles'] = $mediafiles;
+        array_push($compare_data, $user);
       }
-      $userlike = $this->db->query("select contestent_id from tb_like WHERE user_liked='$user_id' and matchid='$matchid'");
-      // echo "select contestent_id from tb_like WHERE user_liked='$user_id' and matchid='$matchid'";
-      if ($userlike->num_rows() > 0) {
-        // echo 'yes';
-        $userlikes = $userlike->row();
-        // print_r($userlikes);
-        $contid = $userlikes->contestent_id;
-        if ($contid == $uid) {
-          // echo "rival match";
-          $userrivallike = '1';
-          $useroppolike = '0';
-        }
-        if ($contid == $oppouid) {
-          // echo "oppo match";
-          $userrivallike = '0';
-          $useroppolike = '1';
-        }
-        if ($contid == 0) {
-          // echo "open like ";
-          $userrivallike = '0';
-          $useroppolike = '0';
-        }
-      } else {
-        $userrivallike = '0';
-        $useroppolike = '0';
-      }
+
+      // if (!empty($visitorid)) {
+      //   $visitoruserlike = $this->db->query("select contestent_id from tb_like WHERE user_liked='$visitorid' and matchid='$matchid'");
+      //   if ($visitoruserlike->num_rows() > 0) {
+      //     $visitoruserlikes = $visitoruserlike->row();
+      //     $cont_id = $visitoruserlikes->contestent_id;
+      //     if ($cont_id == $uid) {
+      //       // echo "rival match";
+      //       $visitor_userrivallike = '1';
+      //       $visitor_useroppolike = '0';
+      //     }
+      //     if ($cont_id == $oppouid) {
+      //       // echo "oppo match";
+      //       $visitor_userrivallike = '0';
+      //       $visitor_useroppolike = '1';
+      //     }
+      //     if ($cont_id == 0) {
+      //       // echo "open like ";
+      //       $visitor_userrivallike = '0';
+      //       $visitor_useroppolike = '0';
+      //     }
+      //   } else {
+      //     $visitor_userrivallike = '0';
+      //     $visitor_useroppolike = '0';
+      //   }
+      // } else {
+      //   $visitor_userrivallike = '0';
+      //   $visitor_useroppolike = '0';
+      // }
+      // $userlike = $this->db->query("select contestent_id from tb_like WHERE user_liked='$user_id' and matchid='$matchid'");
+      // // echo "select contestent_id from tb_like WHERE user_liked='$user_id' and matchid='$matchid'";
+      // if ($userlike->num_rows() > 0) {
+      //   // echo 'yes';
+      //   $userlikes = $userlike->row();
+      //   // print_r($userlikes);
+      //   $contid = $userlikes->contestent_id;
+      //   if ($contid == $uid) {
+      //     // echo "rival match";
+      //     $userrivallike = '1';
+      //     $useroppolike = '0';
+      //   }
+      //   if ($contid == $oppouid) {
+      //     // echo "oppo match";
+      //     $userrivallike = '0';
+      //     $useroppolike = '1';
+      //   }
+      //   if ($contid == 0) {
+      //     // echo "open like ";
+      //     $userrivallike = '0';
+      //     $useroppolike = '0';
+      //   }
+      // } else {
+      //   $userrivallike = '0';
+      //   $useroppolike = '0';
+      // }
       // echo $userrivallike;
       // die();
-      $cmnt_count = $this->db->query("select count(*) as total_cmnt from tb_comment WHERE match_id='$matchid' ");
-      $cmntcount = $cmnt_count->row();
+      $cmntcount = $this->db->query("select count(*) as total_cmnt from tb_comment WHERE match_id='$match_id'")->row()->total_cmnt;
       //
       $current_time = date('H:i:s');
       /* Send duration start */
@@ -2082,40 +2115,11 @@ class UserModel  extends CI_Model
       /* remaning duration end */
       //
       // die();
-
-      $data[] =  array(
-        'match_id'        => $result['matchid'],
-        'senderid'        => $result['rival_id'],
-        'sender_name' => $output->name,
-        'sender_profile' => $pic,
-        'sender_email' => $output->email,
-        'receiverid'      => $result['opponent_id'],
-        'receiver_name' => $resultoutput->name,
-        'receiver_profile' => $picture,
-        'receiver_email' => $resultoutput->email,
-        'description'       => $result['description'],
-        'time_duration'        => $result['time_duration'],
-        'caption'      => $result['caption'],
-        'category'       => $result['category'],
-        'match_start' => $result['replied_at'],
-        'match_end' => $result['match_end'],
-        'match_invitationsend' => $result['created_at'],
-        'sender_image' => $sfile,
-        'sender_image_type' => $sfiletype,
-        'receiver_image' => $ofile,
-        'receiver_image_type' => $ofiletype,
-        'sender_likecount' => $sender_like,
-        'receiver_likecount' => $receiver_like,
-        'total_likecount' => $sender_like + $receiver_like,
-        'userliked_sender' => $userrivallike,
-        'userliked_receiver' => $useroppolike,
-        'send_duration' => $sduration,
-        'remaining_time' => $rduration,
-        'total_comment_count' => $cmntcount->total_cmnt,
-        'match_status' => $result['match_status'],
-        'visitorliked_sender' => $visitor_userrivallike,
-        'visitorliked_receiver' => $visitor_useroppolike,
-      );
+      $result['comment_count'] = $cmntcount;
+      $result['compare_data'] = $compare_data;
+      $result['send_duration'] = $sduration;
+      $result['remaining_time'] = $rduration;
+      array_push($data, $result);
     }
     return $data;
   }

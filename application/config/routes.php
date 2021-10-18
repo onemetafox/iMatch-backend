@@ -128,3 +128,5 @@ $route['api/v1/BestieCommentLike']['post']              = 'api/v1/User/BestieCom
 $route['api/v1/UpdateBestieComment']['post']              = 'api/v1/User/UpdateBestieComment';
 $route['api/v1/disable_comment']['post']              = 'api/v1/User/disable_comment';
 $route['api/v1/get_pending_match/(:any)']['get']  = 'api/v1/User/get_pending_match/$1';
+
+$route['api/v1/startPendingMatch']['post']              = 'api/v1/User/startPendingMatch';

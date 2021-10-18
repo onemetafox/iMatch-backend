@@ -356,6 +356,18 @@ class User extends CI_Controller
         }
         echo  json_encode($post);
     }
+    public function startPendingMatch(){
+        $matchid = $this->input->post('matchId');
+        $result = $this->UserModel->startPendingMatch($matchid);
+        if ($result == 'success') {
+            $post = array(
+                'status'  => true,
+                'message' => 'success',
+                'details' => $result
+            );
+        }
+        echo  json_encode($post);
+    }
     public function accept_or_reject()
     {
         $result = $this->UserModel->accept_or_reject();
@@ -574,30 +586,17 @@ class User extends CI_Controller
     public function OngoingMatch()
     {
         $result = $this->UserModel->get_ongoingmatch();
-        // $user_data['link'] = $this->UserModel->get_ongoingmatch_link();
-        // $user_data['text'] = $this->UserModel->get_ongoingmatch_text();
-        // $user_data['audio'] = $this->UserModel->get_ongoingmatch_audio();
-        // $user_data['image'] = $this->UserModel->get_ongoingmatch_image();
-        // $user_data['video'] = $this->UserModel->get_ongoingmatch_video();
-        if ((!empty($user_data['link'])) || (!empty($user_data['text'])) || (!empty($user_data['audio'])) || (!empty($user_data['image']))) {
+        if($result){
             $data = array(
                 'status'  => true,
                 'message' => 'success',
-                'details' => $user_data
-
+                'details' => $result
             );
-        } else {
-            $udata=array(
-                'link'=>[],
-                'text'=>[],
-                'audio'=>[],
-                'image'=>[],
-                'video'=>[],
-            );
+        }else{
             $data = array(
                 'status'  => false,
-                'message' => 'currently you are having no ongoing matches',
-                'details' =>$udata
+                'message' => 'currently you are having no personal matches',
+                'details' =>[]
             );
         }
         echo  json_encode($data);
