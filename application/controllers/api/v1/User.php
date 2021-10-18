@@ -513,7 +513,8 @@ class User extends CI_Controller
     }
     public function Match_reply()
     {
-        $result = $this->UserModel->Match_accept_or_reject();
+        $data = $this->input->post();
+        $result = $this->UserModel->matchReject($data);
         if ($result == "success") {
             $post = array(
                 'status'  => true,

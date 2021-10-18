@@ -229,7 +229,7 @@ class UserModel  extends CI_Model
           $pic = base_url() . 'uploads/profile_image/user.png';
         }
         $user['pic'] = $pic;
-        if($user['accept_status']){
+        if($user['accept_status'] == "accept"){
           $status = true;
         }
         array_push($tem_user, $user);
@@ -352,6 +352,11 @@ class UserModel  extends CI_Model
     } else {
       return "fail";
     }
+  }
+  public function matchReject($data){
+    $query = "UPDATE tb_matchusers SET accept_status = '".$data['status']."' WHERE match_id = '".$data['matchid']."' AND opponent_id = '".$data['userid']."'";
+    $this->db->query($query);
+    return 'success';
   }
   public function uploadedfile($image)
   {
