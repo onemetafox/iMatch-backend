@@ -407,6 +407,7 @@ class UserModel  extends CI_Model
       // echo "not found";
       $pic = base_url() . 'uploads/profile_image/user.png';
     }
+    $ongoinmatch_count = $this->db->query("SELECT count(*) count FROM tb_match WHERE invitation_status = 'accept' and match_type = 'open' and match_end> CURRENT_DATE()")->row()->count;
     $total_notification = $result_squad->squad_count + $result_fan->fan_count +$openmatch_count + $result_matcheinvitation->invitationcount;
     $data[] =  array(
       'userid'        => $result['id'],
@@ -424,6 +425,7 @@ class UserModel  extends CI_Model
       'fans_of_count' => $result_fanof->fanof_count,
       'matches_count' => $result_matches->match_count,
       'openmatch_count' => $openmatch_count,
+      'ongoingmatch_count' => $ongoinmatch_count,
       'matches_invitationcount' => $result_matcheinvitation->invitationcount,
       'total_notification' => $total_notification
     );
