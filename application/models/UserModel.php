@@ -356,6 +356,12 @@ class UserModel  extends CI_Model
   public function matchReject($data){
     $query = "UPDATE tb_matchusers SET accept_status = '".$data['status']."' WHERE match_id = '".$data['matchid']."' AND opponent_id = '".$data['userid']."'";
     $this->db->query($query);
+    $query = "SELECT count(*) count FROM tb_matchusers WHERE match_id = '".$data['matchid']."' AND ( accept_status = 'accept' OR accept_status IS NULL)";
+    $reject_count = $this->db->query($query)->row()->count;
+    if($reject_count == 0 ){
+      $current_date = date("Y-m-d H:s:i");
+      $check = $this->db->query("UPDATE tb_match SET invitation_status='reject', replied_at='$current_date', match_status='0' WHERE matchid='".$data['matchid']."'");
+    }
     return 'success';
   }
   public function uploadedfile($image)
@@ -593,6 +599,22 @@ class UserModel  extends CI_Model
     //     return "fail";
     //   }
     // }
+  }
+  public function matchAccept(){
+    $match_id = $this->input->post('matchid');
+    $user_id = $this->input->post('userid');
+    $this->db->query("UPDATE tb_matchusers SET accept_status = 'accept' WHERE match_id = '".$match_id."' AND opponent_id = '$user_id'");
+
+    $query = "SELECT count(*) count FROM tb_matchusers WHERE match_id = '$match_id' AND ( accept_status = 'reject' OR accept_status IS NULL)";
+    $accept_count = $this->db->query($query)->row()->count;
+    if($accept_count == 0 ){
+      $result = $this->db->query("SELECT * FROM tb_match WHERE matchid='$match_id' and `match_type` = 'open'")->row();
+      $time = $result->time_duration;
+      $current_date = date("Y-m-d H:s:i");
+      $match_end = date('Y-m-d H:i:s', strtotime($time));
+      $check = $this->db->query("update tb_match set invitation_status='accept',replied_at='$current_date',  match_end='$match_end',match_status='1' WHERE matchid='$match_id'");
+    }
+    return 'success';
   }
   public function accept_or_reject()
   {
