@@ -2007,9 +2007,11 @@ class UserModel  extends AbstractModel
         $filename = $media['filename'];
         $filetype = $media['filetype'];
         if ($filetype == 'file') {
-          $file = base_url() . 'uploads/Matchuploads/' . $sfilename;
+            $file = base_url() . 'uploads/Matchuploads/' . $filename;
+            $mediafiles[$index]['media_type'] = $this->getFileType($media['filename']);
         } else {
-          $file = $filename;
+            $file = $filename;
+            $mediafiles[$index]['media_type'] = $media['filetype'];
         }
         $mediafiles[$index]['file_path'] = $file;
       }
@@ -2038,9 +2040,11 @@ class UserModel  extends AbstractModel
           $filename = $media['filename'];
           $filetype = $media['filetype'];
           if ($filetype == 'file') {
-            $file = base_url() . 'uploads/Matchuploads/' . $sfilename;
+            $file = base_url() . 'uploads/Matchuploads/' . $filename;
+            $mediafiles[$index]['media_type'] = $this->getFileType($media['filename']);
           } else {
-            $file = $filename;
+              $file = $filename;
+              $mediafiles[$index]['media_type'] = $media['filetype'];
           }
           $mediafiles[$index]['file_path'] = $file;
         }
