@@ -1471,6 +1471,9 @@ class User extends CI_Controller
         }
         echo  json_encode($post);
     }
+    function get_ongoing_match($id){
+        
+    }
     public function acceptInvitation()
     {
         $result = $this->UserModel->matchAccept();

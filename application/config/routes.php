@@ -130,3 +130,4 @@ $route['api/v1/disable_comment']['post']              = 'api/v1/User/disable_com
 $route['api/v1/get_pending_match/(:any)']['get']  = 'api/v1/User/get_pending_match/$1';
 
 $route['api/v1/startPendingMatch']['post']              = 'api/v1/User/startPendingMatch';
+$route['api/v1/get_ongoing_match/(:any)']['get']              = 'api/v1/Match/getOngoingMatch/$1';

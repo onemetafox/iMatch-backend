@@ -1,8 +1,9 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class UserModel  extends CI_Model
+class UserModel  extends AbstractModel
 {
+  var $_table = 'user';
   public function register($data)
   {
     $email = $this->input->post('email');
@@ -2032,7 +2033,7 @@ class UserModel  extends CI_Model
         $user['pic'] = $pic;
         $match_like_count = $this->db->query("SELECT COUNT(*) count FROM tb_like WHERE matchid = '$match_id' AND contestent_id = '".$oppoent['opponent_id']."' AND like_status = 'like'")->row()->count;
         $match_dislike_count = $this->db->query("SELECT COUNT(*) count FROM tb_like WHERE matchid = '$match_id' AND contestent_id = '".$oppoent['opponent_id']."' AND like_status = 'dislike'")->row()->count;
-        $mediafiles = $this->db->query("SELECT * FROM tb_matchupload WHERE user_uploaded='$user_id' AND matchid = '$match_id'")->result_array();
+        $mediafiles = $this->db->query("SELECT * FROM tb_matchupload WHERE user_uploaded='".$oppoent['opponent_id']."' AND matchid = '$match_id'")->result_array();
         foreach($mediafiles as $index=> $media){
           $filename = $media['filename'];
           $filetype = $media['filetype'];
