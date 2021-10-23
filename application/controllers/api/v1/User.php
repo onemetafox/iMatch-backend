@@ -1,17 +1,15 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
-class User extends CI_Controller
+
+require APPPATH . '/core/BaseController.php';
+
+class User extends BaseController
 {
 
     public function __construct()
-    {
-        header('Access-Control-Allow-Origin: *');
-        header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
-        header("Access-Control-Allow-Methods: GET, POST");
+    {   
         parent::__construct();
         $this->load->model('UserModel');
-        $this->load->database();
-        $this->load->helper('url', 'form');
     }
     public function register()
     {
@@ -26,33 +24,6 @@ class User extends CI_Controller
         $device_type = $this->input->post('device_type');
         $long = $this->input->post('long');
         $lat = $this->input->post('lat');
-
-        // $config['upload_path']   = './uploads/profile_image';
-        // $config['allowed_types'] = '*';
-        // $config['encrypt_name']  = true;
-        // $this->load->library('upload', $config);
-        // if (!$this->upload->do_upload('profile_pic')) {
-        //     $error = array('error' => $this->upload->display_errors());
-        //     // print_r($error);
-        //     $errors = array(
-        //         'status'        => false,
-        //         'error' => 'You did not select a file to upload.'
-        //     );
-        //     echo  json_encode($errors);
-        // } else {
-
-        //     //file is uploaded successfully
-        //     $upload_data = $this->upload->data();
-        //     //get the uploaded file name
-        //     $image = $upload_data['file_name'];
-        //     // print_r($image);
-        // }
-        // // die();
-        // if (!empty($image)) {
-        //     $image=$image;
-        // }else{
-        //     $image=" ";
-        // }
         $data = array(
             'name'  => $name,
             'phone' => $phone,
@@ -110,7 +81,7 @@ class User extends CI_Controller
                 );
             }
         }
-        echo  json_encode($data);
+        $this->response($data);
     }
     public function forgotpassword()
     {
