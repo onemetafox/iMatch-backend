@@ -80,7 +80,7 @@ $db['default'] = array(
 	'password' => '',
 	'database' => 'iMatch',
 	'dbdriver' => 'mysqli',
-	'dbprefix' => 'tb_',
+	'dbprefix' => '',
 	'pconnect' => FALSE,
 	'db_debug' => (ENVIRONMENT !== 'production'),
 	'cache_on' => FALSE,

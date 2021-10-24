@@ -2,7 +2,7 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 class UserModel  extends AbstractModel
 {
-  var $_table = 'user';
+  var $_table = 'tb_user';
   public function register($data)
   {
     $email = $this->input->post('email');
