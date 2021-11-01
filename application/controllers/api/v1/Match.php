@@ -70,6 +70,6 @@ class Match extends BaseController
         $match['compare_data'] = $compare_data;
         $match['send_duration'] = $sduration;
         $match['remaining_time'] = $rduration;
-        $this->response(array('success'=>true, $match));
+        $this->response(array('success'=>true, "data"=>$match));
     }
 }
