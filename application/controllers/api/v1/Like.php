@@ -17,7 +17,7 @@ class Like extends BaseController
             $this->Like->save($like);
         }else{
             $filter['like_status'] = 'like';
-            $this->Likave->save($filter);
+            $this->Like->save($filter);
         }
         $this->response(array("sucess"=>true, "msg"=>"Vote success"));
     }
