@@ -24,7 +24,7 @@ class Match extends BaseController
             $filetype = $media['filetype'];
             if ($filetype == 'file') {
                 $file = base_url() . 'uploads/Matchuploads/' . $filename;
-                $mediafiles[$index]['media_type'] = getFileType($media['filename']);
+                $mediafiles[$index]->media_type = getFileType($media['filename']);
             } else {
                 $file = $filename;
                 $mediafiles[$index]->media_type = $media['filetype'];
@@ -50,7 +50,7 @@ class Match extends BaseController
                 $filetype = $media['filetype'];
                 if ($filetype == 'file') {
                     $file = base_url() . 'uploads/Matchuploads/' . $filename;
-                    $mediafiles[$index]['media_type'] = getFileType($media['filename']);
+                    $mediafiles[$index]->media_type = getFileType($media['filename']);
                 } else {
                     $file = $filename;
                     $mediafiles[$index]->media_type = $media['filetype'];

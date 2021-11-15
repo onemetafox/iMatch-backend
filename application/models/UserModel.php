@@ -2007,7 +2007,7 @@ class UserModel  extends AbstractModel
         $filetype = $media['filetype'];
         if ($filetype == 'file') {
             $file = base_url() . 'uploads/Matchuploads/' . $filename;
-            $mediafiles[$index]['media_type'] = $this->getFileType($media['filename']);
+            $mediafiles[$index]['media_type'] = getFileType($media['filename']);
         } else {
             $file = $filename;
             $mediafiles[$index]['media_type'] = $media['filetype'];
@@ -2040,7 +2040,7 @@ class UserModel  extends AbstractModel
           $filetype = $media['filetype'];
           if ($filetype == 'file') {
             $file = base_url() . 'uploads/Matchuploads/' . $filename;
-            $mediafiles[$index]['media_type'] = $this->getFileType($media['filename']);
+            $mediafiles[$index]['media_type'] = getFileType($media['filename']);
           } else {
               $file = $filename;
               $mediafiles[$index]['media_type'] = $media['filetype'];
@@ -4714,17 +4714,6 @@ class UserModel  extends AbstractModel
     $pmatch_id = $this->input->post('personal_matchid');
     
     $select_medias = json_decode($this->input->post('select_medias'));
-    // if (!empty($oppo_filename)) {
-    //   $url = base_url() . 'uploads/Matchuploads/';
-    //   $originalfilename = str_replace("$url", "", "$oppo_filename");
-    // }
-    // if (!empty($oppo_link)) {
-    //   $originalfilename = $oppo_link;
-    // }
-    // if (!empty($oppo_text)) {
-    //   $originalfilename = $oppo_text;
-    // }
-    // print_r($originalfilename);die();
     $caption = $this->input->post('caption');
     $seen_status = $this->input->post('seen_status');
     $data = array(
