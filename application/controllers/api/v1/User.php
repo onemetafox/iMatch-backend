@@ -360,8 +360,8 @@ class User extends BaseController
         $id = $this->input->post('id');
         $user_data['besties'] = $this->UserModel->list_besties($id);
         $user_data['squad'] = $this->UserModel->list_squad($id);
-        $user_data['fan'] = $this->UserModel->list_fan($id);
-        $user_data['fan_of'] = $this->UserModel->list_fanof($id);
+        $user_data['fan'] = $this->Fan->fanList($id, "fan");
+        $user_data['fan_of'] = $this->Fan->fanList($id, "fan_of");
         if (!empty($user_data)) {
             $data = array(
                 'status'  => true,
@@ -733,35 +733,36 @@ class User extends BaseController
     }
     public function add_fan()
     {
-        $category = $this->input->post('category');
-        $result = $this->UserModel->add_fan();
-        if ($result == "success") {
-            if ($category == "fan") {
-                $post = array(
-                    'status'  => true,
-                    'message' => 'Successfully added to Fan List'
-                );
-            } else {
-                $post = array(
-                    'status'  => true,
-                    'message' => 'Successfully added as Fan of List'
-                );
-            }
-        }
-        if ($result == "exist") {
+        $data = $this->input->post();
+        $count = $this->Fan->count($data);
+        if($count != 0){
             $post = array(
                 'status'  => false,
                 'message' => 'Already added '
             );
-        }
-        if ($result == "fail") {
-            $post = array(
-                'status'  => false,
-                'message' => 'failed'
+        }else{
+            $fan = $this->Fan->save($data);
+            $user_from =  $this->User->select($data['req_from']);
+            $user_to =  $this->User->select($data['req_to']);
+
+            $devicetoken = $user_to->device_token;
+            $devicetype = $user_to->device_type;
+            
+            $message = $user_from->name . ' ' . 'added you as Fan';
+            $notification_status = 'Add_fan';
+
+            $data = array(
+                'sender_id' => $data['req_from'],
+                'receiver_id' => $data['req_to'],
+                'message' => $message,
+                'notification_status' => $notification_status,
+                'request_id' => $fan->id
             );
+            $this->db->insert('tb_notification', $data);
+            $this->push($devicetoken, $message, $senderdevicetype);
         }
 
-        echo  json_encode($post);
+        $this->response($post);
     }
     public function Headline()
     {

@@ -391,9 +391,9 @@ class UserModel  extends AbstractModel
     // echo ;die();
     $bestie = $this->db->query("select count(*) as bestie_count from tb_bestie where (req_from='$userid' or req_to='$userid') and category='bestie' and req_status='1'");
     $result_bestie = $bestie->row();
-    $fan = $this->db->query("select count(*) as fan_count from tb_fans where (req_from='$userid' or req_to='$userid') and category='fan'");
+    $fan = $this->db->query("select count(*) as fan_count from tb_fans where (req_from='$userid')");
     $result_fan = $fan->row();
-    $fanof = $this->db->query("select count(*) as fanof_count from tb_fans where (req_from='$userid' or req_to='$userid') and category='fan_of'");
+    $fanof = $this->db->query("select count(*) as fanof_count from tb_fans where (req_to='$userid')");
     $result_fanof = $fanof->row();
     date_default_timezone_set('Asia/Kolkata');
     $current_date    = date('Y-m-d H:i:s');
