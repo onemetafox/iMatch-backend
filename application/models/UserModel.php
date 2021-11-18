@@ -2526,9 +2526,9 @@ class UserModel  extends AbstractModel
     $result_squad = $squad->row();
     $bestie = $this->db->query("select count(*) as bestie_count from tb_bestie where (req_from='$userid' or req_to='$userid') and category='bestie' and req_status='1'");
     $result_bestie = $bestie->row();
-    $fan = $this->db->query("select count(*) as fan_count from tb_fans where (req_from='$userid' or req_to='$userid') and category='fan'");
+    $fan = $this->db->query("select count(*) as fan_count from tb_fans where (req_from='$userid')");
     $result_fan = $fan->row();
-    $fanof = $this->db->query("select count(*) as fanof_count from tb_fans where (req_from='$userid' or req_to='$userid') and category='fan_of'");
+    $fanof = $this->db->query("select count(*) as fanof_count from tb_fans where (req_to='$userid')");
     $result_fanof = $fanof->row();
     $matchquery =  $this->db->query("select count(*) as endmatch_count from tb_match where (rival_id='$userid' or opponent_id='$userid') and match_end<='$current_date'");
     $result_matchquery = $matchquery->row();
