@@ -277,38 +277,7 @@ class User extends BaseController
 
         echo  json_encode($post);
     }
-    public function add_bestie()
-    {
-        $category = $this->input->post('category');
-        $result = $this->UserModel->add_bestie();
-        if ($result == "success") {
-            if ($category == "squad") {
-                $post = array(
-                    'status'  => true,
-                    'message' => 'Successfully added to squadlist'
-                );
-            } else {
-                $post = array(
-                    'status'  => true,
-                    'message' => 'Successfully added as Bestie'
-                );
-            }
-        }
-        if ($result == "exist") {
-            $post = array(
-                'status'  => false,
-                'message' => 'Already added '
-            );
-        }
-        if ($result == "fail") {
-            $post = array(
-                'status'  => false,
-                'message' => 'failed'
-            );
-        }
 
-        echo  json_encode($post);
-    }
     public function get_notification()
     {
         $result = $this->UserModel->get_notification();
@@ -741,7 +710,7 @@ class User extends BaseController
                 'message' => 'Already added '
             );
         }else{
-            $fan = $this->Fan->save($data);
+            $fan_id = $this->Fan->insert($data);
             $user_from =  $this->User->select($data['req_from']);
             $user_to =  $this->User->select($data['req_to']);
 
@@ -756,10 +725,14 @@ class User extends BaseController
                 'receiver_id' => $data['req_to'],
                 'message' => $message,
                 'notification_status' => $notification_status,
-                'request_id' => $fan->id
+                'request_id' => $fan_id
             );
             $this->db->insert('tb_notification', $data);
-            $this->push($devicetoken, $message, $senderdevicetype);
+            $this->push($devicetoken, $message, $devicetype);
+            $post = array(
+                'status'  => true,
+                'message' => 'Successfully Added'
+            );
         }
 
         $this->response($post);

@@ -382,26 +382,28 @@ class UserModel  extends AbstractModel
   }
   public function getprofilepic($userid)
   {
-    $result =  $this->db->query("select * from tb_user where id='$userid'")->row_array();
+    $result =  (array)$this->User->select($userid);
     $data = array();
     $userid = $result['id'];
-    $squad = $this->db->query("select count(*) as squad_count from tb_bestie where (req_from='$userid' or req_to='$userid') and category='squad' and req_status='1'");
-    $result_squad = $squad->row();
-    // print_r($result_squad);
-    // echo ;die();
-    $bestie = $this->db->query("select count(*) as bestie_count from tb_bestie where (req_from='$userid' or req_to='$userid') and category='bestie' and req_status='1'");
-    $result_bestie = $bestie->row();
-    $fan = $this->db->query("select count(*) as fan_count from tb_fans where (req_from='$userid')");
-    $result_fan = $fan->row();
-    $fanof = $this->db->query("select count(*) as fanof_count from tb_fans where (req_to='$userid')");
-    $result_fanof = $fanof->row();
+    
+    $squad = $this->Bestie->count(array("req_from"=>$userid, "category"=>"squad", "req_status"=>1));
+    $bestie = $this->Bestie->count(array("req_from"=>$userid, "category"=>"bestie", "req_status"=>1));
+
+    $fan = $this->Fan->count(array("req_from"=>$userid));
+    
+    $fanof = $this->Fan->count(array("req_to"=>$userid));
+
     date_default_timezone_set('Asia/Kolkata');
     $current_date    = date('Y-m-d H:i:s');
+
     $matches = $this->db->query("select count(*) as match_count from tb_match where invitation_status='accept' and (rival_id='$userid' or opponent_id='$userid')");
+
     $result_matches = $matches->row();
+    
     $matchesinvitation = $this->db->query("select count(*) as invitationcount from tb_matchusers WHERE opponent_id='$userid' and `accept_status` IS NULL");
+    
     $result_matcheinvitation = $matchesinvitation->row();
-    //pending match count
+
     $openmatch_count = $this->db->query("SELECT COUNT(*) as count from tb_match WHERE rival_id = '$userid' AND invitation_status IS NULL AND match_type = 'open'")->row()->count;
 
     if (!empty($result['profile_pic'])) {
@@ -419,7 +421,7 @@ class UserModel  extends AbstractModel
       $pic = base_url() . 'uploads/profile_image/user.png';
     }
     $ongoinmatch_count = $this->db->query("SELECT count(*) count FROM tb_match WHERE invitation_status = 'accept' and match_type = 'open' and match_end> CURRENT_DATE()")->row()->count;
-    $total_notification = $result_squad->squad_count + $result_fan->fan_count +$openmatch_count + $result_matcheinvitation->invitationcount;
+    // $total_notification = $result_squad->squad_count + $result_fan->fan_count +$openmatch_count + $result_matcheinvitation->invitationcount;
     $data[] =  array(
       'userid'        => $result['id'],
       'name'      => $result['name'],
@@ -430,71 +432,16 @@ class UserModel  extends AbstractModel
       'bio' => $result['bio'],
       'gender' => $result['gender'],
       'profile_pic'      => $pic,
-      'squad_count' => $result_squad->squad_count,
-      'bestie_count' => $result_bestie->bestie_count,
-      'fans_count' => $result_fan->fan_count,
-      'fans_of_count' => $result_fanof->fanof_count,
+      'squad_count' => $squad,
+      'bestie_count' => $bestie,
+      'fans_count' => $fan,
+      'fans_of_count' => $fanof,
       'matches_count' => $result_matches->match_count,
       'openmatch_count' => $openmatch_count,
       'ongoingmatch_count' => $ongoinmatch_count,
-      'matches_invitationcount' => $result_matcheinvitation->invitationcount,
-      'total_notification' => $total_notification
+      'matches_invitationcount' => $result_matcheinvitation->invitationcount
     );
     return $data;
-  }
-  public function add_bestie()
-  {
-    $from = $this->input->post('from');
-    $to = $this->input->post('to');
-    $category = $this->input->post('category');
-    $data = array(
-      'req_from' => $this->input->post('from'),
-      'req_to' => $this->input->post('to'),
-      'category' => $this->input->post('category'),
-    );
-    $query =  $this->db->query("select * from tb_user where id='$from'"); //sender
-    $queryto =  $this->db->query("select * from tb_user where id='$to'"); //receiver
-    if ($this->db->affected_rows() > 0) {
-      // echo "select * from tb_bestie where (req_from='$from' and req_to='$to') or (req_from='$to' and req_to='$from') and category='$category'";die();
-      $result_query =  $this->db->query("select * from tb_bestie where ((req_from='$from' and req_to='$to') or (req_from='$to' and req_to='$from')) and category='$category'");
-      if ($this->db->affected_rows() > 0) {
-        return "exist";
-      } else {
-        $this->db->insert('tb_bestie', $data);
-        if ($this->db->affected_rows() > 0) {
-          $bestie_id = $this->db->insert_id();
-          $result_array =  $query->row();
-          $senderdevtoken = $result_array->device_token;
-          $sendermessage = $result_array->name . ' ' . 'wants to add you as' . $category;
-          $senderdevicetype = $result_array->device_type;
-          $resultarray =  $queryto->row();
-          $receiverdevtoken = $resultarray->device_token;
-          $receivermessage = 'You have added ' . $resultarray->name . ' to your ' . $category . ' list';
-          $receiverdevicetype = $resultarray->device_type;
-          $data = array(
-            'sender_id' => $this->input->post('from'),
-            'receiver_id' => $this->input->post('to'),
-            'message' => $result_array->name . ' ' . 'wants to add you as ' . $category,
-            'notification_status' => 'Add_' . $category,
-            'request_id' => $bestie_id
-          );
-          $this->db->insert('tb_notification', $data);
-          $this->push($senderdevtoken, $sendermessage, $senderdevicetype);
-          $data = array(
-            'sender_id' => $this->input->post('to'),
-            'receiver_id' => $this->input->post('from'),
-            'message' =>  'You have added ' . $resultarray->name . ' to your ' . $category . ' list',
-            'notification_status' => 'Add_to_' . $category,
-            'request_id' => $bestie_id
-          );
-          $this->db->insert('tb_notification', $data);
-          $this->push($receiverdevtoken, $receivermessage, $receiverdevicetype);
-          return "success";
-        } else {
-          return "fail";
-        }
-      }
-    }
   }
   public function get_notification()
   {

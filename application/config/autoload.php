@@ -139,5 +139,7 @@ $autoload['model'] = array(
     'MatchUploadModel' => 'Upload',
     'MatchUserModel'=>'MatchUser',
     'CommentModel'=>'Comment',
-    'FanModel'=>'Fan'
+    'FanModel'=>'Fan',
+    'BestieModel'=>'Bestie',
+    'NotificationModel'=>'Notification'
 );

@@ -60,7 +60,7 @@ $route['api/v1/Listusers']['post']                 = 'api/v1/User/Listusers';
 $route['api/v1/profile']['post']              = 'api/v1/User/profile';
 $route['api/v1/profile_pic']['post']              = 'api/v1/User/profile_pic';
 $route['api/v1/get_profile_pic/(:any)']['get']  = 'api/v1/User/get_profile_pic/$1';
-$route['api/v1/add_bestie']['post']              = 'api/v1/User/add_bestie';
+$route['api/v1/add_bestie']['post']              = 'api/v1/Bestie/add_bestie';
 $route['api/v1/get_notification']['post']  = 'api/v1/User/get_notification';
 $route['api/v1/accept_or_reject']['post']              = 'api/v1/User/accept_or_reject';
 $route['api/v1/Listbesties']['post']                 = 'api/v1/User/Listbesties';
@@ -132,3 +132,5 @@ $route['api/v1/get_pending_match/(:any)']['get']  = 'api/v1/User/get_pending_mat
 
 $route['api/v1/startPendingMatch']['post']              = 'api/v1/User/startPendingMatch';
 $route['api/v1/get_ongoing_match/(:any)']['get']              = 'api/v1/Match/getOngoingMatch/$1';
+
+$route['api/v1/getNotification/(:any)']['get']              = 'api/v1/Notification/getNotification/$1';
