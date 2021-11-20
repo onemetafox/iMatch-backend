@@ -34,4 +34,11 @@ class Notification extends BaseController
         );
         $this->response($post);
     }
+
+    public function setNotificationRead(){
+        $filter = $this->input->post();
+        $data['read_status'] = 2;
+        $this->Notification->update($data, $filter);
+        $this->response(array("status"=>true, "message"=>"change notification status"));
+    }
 }

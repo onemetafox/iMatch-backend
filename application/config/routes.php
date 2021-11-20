@@ -134,3 +134,4 @@ $route['api/v1/startPendingMatch']['post']              = 'api/v1/User/startPend
 $route['api/v1/get_ongoing_match/(:any)']['get']              = 'api/v1/Match/getOngoingMatch/$1';
 
 $route['api/v1/getNotification/(:any)']['get']              = 'api/v1/Notification/getNotification/$1';
+$route['api/v1/setNotificationRead']['post']              = 'api/v1/Notification/setNotificationRead';
