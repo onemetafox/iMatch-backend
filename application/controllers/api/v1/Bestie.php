@@ -38,4 +38,34 @@ class Bestie extends BaseController
         }
         $this->response($post);
     }
+    public function changeBestieStatus(){
+        $param = $this->input->post();
+        $param['read_status'] = "1";
+        $this->Bestie->update($param, array("bestie_id" => $param['bestie_id']));
+        if($param['req_status'] == "1"){
+            $message = "Invite Accepted";
+        }else{
+            $message = "Invite Rejected";
+        }
+        $filter['request_id'] = $param['bestie_id'];
+        $filter['notification_status'] = "Add_squad";
+        $data = $filter;
+        $data['read_status'] = "2";
+        $this->Notification->update($data, $filter);
+        $post = array(
+            "status" => true,
+            "message" => $message
+        );
+        $this->response($post);
+    }
+    public function getBestieRequest(){
+        $filter = $this->input->post();
+        $result = $this->Bestie->getInvitation($filter);
+        $post = array(
+            "status" => true,
+            "details" => $result
+        );
+        $this->response($post);
+        
+    }
 }
