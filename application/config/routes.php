@@ -141,3 +141,4 @@ $route['api/v1/setNotificationRead']['post']              = 'api/v1/Notification
 $route['api/v1/getBestieRequest']['post']              = 'api/v1/Bestie/getBestieRequest';
 $route['api/v1/add_bestie']['post']              = 'api/v1/Bestie/add_bestie';
 $route['api/v1/changeBestieStatus']['post']              = 'api/v1/Bestie/changeBestieStatus';
+$route['api/v1/getSquadList']['post']              = 'api/v1/Bestie/getSquadList';
