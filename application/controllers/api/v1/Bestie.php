@@ -72,5 +72,10 @@ class Bestie extends BaseController
     public function getSquadList(){
         $id = $this->input->post("id");
         $squadList = $this->Bestie->getSquadList($id);
+        $post = array(
+            "status" => true,
+            "details" => $squadList
+        );
+        $this->response($post);
     }
 }
