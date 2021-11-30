@@ -28,8 +28,9 @@ class BestieModel  extends AbstractModel
         foreach($squad_list as $index =>$squad){
             $matchs = $this->MatchUser->all(array("user_id"=> $squad->req_from, "opponent_id"=> $squad->req_to, "accept_status"=>"accept"));
             $squad->match_count = count($matchs);
-            $medias = array();
+            $compare_data = array();
             foreach($matchs as $match){
+                $medias = array();
                 $mediafiles = $this->Upload->all(array("user_uploaded"=> $squad->req_from, "matchid"=>$match->match_id));
                 foreach($mediafiles as $index=> $media){
                     $media = (array)$media;
@@ -61,8 +62,10 @@ class BestieModel  extends AbstractModel
                         $mediafiles[$index]->file_path = $file;
                     }
                 array_push($medias, $mediafiles);
+                array_push($compare_data, $medias);
             }
-            $squad->media_files = $medias;
+            $squad->compare_data = $compare_data;
+            $squad->show = false;
         }
         return $squad_list;
     }
