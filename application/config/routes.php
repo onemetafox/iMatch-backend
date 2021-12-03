@@ -122,8 +122,7 @@ $route['api/v1/ClosedMatch']['post']                 = 'api/v1/User/ClosedMatch'
 $route['api/v1/personallike']['post']                 = 'api/v1/Like/personallike';
 $route['api/v1/bestielike']['post']                 = 'api/v1/User/Bestielike';
 $route['api/v1/RemoveBesties']['post']              = 'api/v1/User/RemoveBesties';
-$route['api/v1/BestieComment']['post']              = 'api/v1/User/BestieComment';
-$route['api/v1/GetBestieComment']['post']              = 'api/v1/User/GetBestieComment';
+
 $route['api/v1/DeleteBestieComment']['post']              = 'api/v1/User/DeleteBestieComment';
 $route['api/v1/BestieCommentLike']['post']              = 'api/v1/User/BestieCommentLike';
 $route['api/v1/UpdateBestieComment']['post']              = 'api/v1/User/UpdateBestieComment';
@@ -142,3 +141,8 @@ $route['api/v1/getBestieRequest']['post']              = 'api/v1/Bestie/getBesti
 $route['api/v1/add_bestie']['post']              = 'api/v1/Bestie/add_bestie';
 $route['api/v1/changeBestieStatus']['post']              = 'api/v1/Bestie/changeBestieStatus';
 $route['api/v1/getSquadList']['post']              = 'api/v1/Bestie/getSquadList';
+
+
+// Bestie Comment
+$route['api/v1/BestieComment']['post']              = 'api/v1/BestieComment/add';
+$route['api/v1/GetBestieComment']['post']              = 'api/v1/BestieComment/all';
