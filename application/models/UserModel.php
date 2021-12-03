@@ -387,7 +387,7 @@ class UserModel  extends AbstractModel
     $userid = $result['id'];
     
     $squad = $this->Bestie->count(array("req_to"=>$userid, "category"=>"squad", "req_status"=>1));
-    $bestie = $this->Bestie->count(array("req_to"=>$userid, "category"=>"bestie", "req_status"=>1));
+    $bestie = $this->Bestie->count(array("req_from"=>$userid, "category"=>"bestie", "req_status"=>1));
 
     $fan = $this->Fan->count(array("req_from"=>$userid));
     

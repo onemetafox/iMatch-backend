@@ -141,5 +141,6 @@ $autoload['model'] = array(
     'CommentModel'=>'Comment',
     'FanModel'=>'Fan',
     'BestieModel'=>'Bestie',
-    'NotificationModel'=>'Notification'
+    'NotificationModel'=>'Notification',
+    'BestieCommentModel' => 'BestieComment'
 );
