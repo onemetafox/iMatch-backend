@@ -63,7 +63,7 @@ $route['api/v1/get_profile_pic/(:any)']['get']  = 'api/v1/User/get_profile_pic/$
 
 $route['api/v1/get_notification']['post']  = 'api/v1/User/get_notification';
 $route['api/v1/accept_or_reject']['post']              = 'api/v1/User/accept_or_reject';
-$route['api/v1/Listbesties']['post']                 = 'api/v1/User/Listbesties';
+
 $route['api/v1/statusbar']['post']                 = 'api/v1/User/statusbar';
 $route['api/v1/GetStatus']['post']                 = 'api/v1/User/GetStatus';
 $route['api/v1/MatchInvitation']['post']                 = 'api/v1/User/MatchInvitation';
@@ -141,6 +141,7 @@ $route['api/v1/getBestieRequest']['post']              = 'api/v1/Bestie/getBesti
 $route['api/v1/add_bestie']['post']              = 'api/v1/Bestie/add_bestie';
 $route['api/v1/changeBestieStatus']['post']              = 'api/v1/Bestie/changeBestieStatus';
 $route['api/v1/getSquadList']['post']              = 'api/v1/Bestie/getSquadList';
+$route['api/v1/getBestieList']['post']                 = 'api/v1/Bestie/getBestieList';
 
 
 // Bestie Comment

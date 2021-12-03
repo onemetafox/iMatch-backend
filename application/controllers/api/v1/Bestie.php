@@ -78,4 +78,13 @@ class Bestie extends BaseController
         );
         $this->response($post);
     }
+    public function getBestieList(){
+        $req_from = $this->input->post("id");
+        $filter["req_from"] = $req_from;
+        $filter["req_status"] = "1";
+        $filter["category"] = "bestie";
+
+        $bestielist = $this->Bestie->getBestieList($filter);
+        print_r($bestielist);
+    }
 }

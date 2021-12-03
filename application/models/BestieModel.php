@@ -17,6 +17,16 @@ class BestieModel  extends AbstractModel
         }
         return $data;
     }
+    public function getBestieList($filter){
+        $query = "SELECT tb_bestie.*, tb_user.*, bestiecomment.count comment_count, bestielike.count like_count FROM `tb_bestie` 
+        LEFT JOIN tb_user on tb_user.id = tb_bestie.req_to
+        LEFT JOIN (SELECT *, COUNT(bestie_id) count FROM tb_bestiecomment GROUP BY bestie_id) bestiecomment ON bestiecomment.bestie_id = tb_bestie.bestie_id
+        LEFT JOIN (SELECT *, COUNT(bestie_id) count FROM tb_bestielike GROUP BY bestie_id) bestielike ON bestielike.bestie_id = tb_bestie.bestie_id
+        WHERE req_from = '".$filter['req_from'] ."' and category = 'bestie' and req_status = '1'";
+        
+        return $this->db->query($query)->result();
+
+    }
     public function getSquadList($id){
         $filter["req_from"] = $id;
         $filter["req_status"] = 1;
