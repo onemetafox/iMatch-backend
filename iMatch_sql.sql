@@ -11,7 +11,7 @@
  Target Server Version : 100418
  File Encoding         : 65001
 
- Date: 23/11/2021 10:13:41
+ Date: 03/12/2021 10:09:33
 */
 
 SET NAMES utf8mb4;
@@ -62,24 +62,35 @@ CREATE TABLE `tb_bestie`  (
   `read_status` int(11) NOT NULL DEFAULT 0,
   `created_at` timestamp(0) NOT NULL DEFAULT current_timestamp(0),
   PRIMARY KEY (`bestie_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of tb_bestie
 -- ----------------------------
-INSERT INTO `tb_bestie` VALUES (1, 2, 3, 'squad', 0, 0, '2021-11-20 11:56:31');
-INSERT INTO `tb_bestie` VALUES (2, 2, 3, 'bestie', 0, 0, '2021-11-20 12:04:12');
+INSERT INTO `tb_bestie` VALUES (1, 2, 3, 'squad', 1, 0, '2021-11-20 11:56:31');
+INSERT INTO `tb_bestie` VALUES (2, 2, 3, 'bestie', 1, 0, '2021-11-20 12:04:12');
 INSERT INTO `tb_bestie` VALUES (3, 3, 2, 'squad', 1, 1, '2021-11-22 04:38:34');
+INSERT INTO `tb_bestie` VALUES (4, 2, 4, 'bestie', 0, 0, '2021-12-02 14:48:31');
 
 -- ----------------------------
 -- Table structure for tb_bestiecomment
 -- ----------------------------
 DROP TABLE IF EXISTS `tb_bestiecomment`;
 CREATE TABLE `tb_bestiecomment`  (
-  `bestie_id` int(11) NOT NULL AUTO_INCREMENT,
+  `commentid` int(11) NOT NULL AUTO_INCREMENT,
+  `bestie_id` int(11) NOT NULL,
   `is_active` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  PRIMARY KEY (`bestie_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+  `replied_commentid` int(11) NULL DEFAULT NULL,
+  `comment` text CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
+  `userid` int(11) NULL DEFAULT NULL,
+  `commented_at` datetime(6) NULL DEFAULT NULL,
+  PRIMARY KEY (`commentid`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of tb_bestiecomment
+-- ----------------------------
+INSERT INTO `tb_bestiecomment` VALUES (1, 2, '1', NULL, 'dsfvsdfsdf', 2, '2021-12-15 02:23:20.000000');
 
 -- ----------------------------
 -- Table structure for tb_bestielike
@@ -583,9 +594,9 @@ CREATE TABLE `tb_matchusers`  (
 -- ----------------------------
 INSERT INTO `tb_matchusers` VALUES (2, 13, 2, 'accept', 1);
 INSERT INTO `tb_matchusers` VALUES (3, 15, 3, NULL, 1);
-INSERT INTO `tb_matchusers` VALUES (4, 15, 3, 'accept', 2);
+INSERT INTO `tb_matchusers` VALUES (4, 15, 2, 'accept', 3);
 INSERT INTO `tb_matchusers` VALUES (5, 16, 3, 'accept', 4);
-INSERT INTO `tb_matchusers` VALUES (6, 16, 3, 'accept', 2);
+INSERT INTO `tb_matchusers` VALUES (6, 16, 2, 'accept', 3);
 INSERT INTO `tb_matchusers` VALUES (7, 17, 2, NULL, 3);
 
 -- ----------------------------
@@ -759,7 +770,7 @@ CREATE TABLE `tb_notification`  (
   `created_at` timestamp(0) NOT NULL DEFAULT current_timestamp(0),
   `read_status` tinyint(1) NULL DEFAULT 1,
   PRIMARY KEY (`not_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of tb_notification
@@ -769,6 +780,7 @@ INSERT INTO `tb_notification` VALUES (2, 2, 3, 'user1@gmail.com wants to add you
 INSERT INTO `tb_notification` VALUES (3, 2, 3, 'user1@gmail.com wants to add you as bestie', 'Add_bestie', 2, '2021-11-20 12:04:12', 1);
 INSERT INTO `tb_notification` VALUES (4, 2, 3, 'user1@gmail.com Invited you from Personalized list to have a Match of 1 hour duration', 'Match_invitation', 17, '2021-11-20 12:06:35', 1);
 INSERT INTO `tb_notification` VALUES (6, 3, 2, 'user2@gmail.com wants to add you as squad', 'Add_squad', 3, '2021-11-22 04:38:34', 2);
+INSERT INTO `tb_notification` VALUES (7, 2, 4, 'user1@gmail.com wants to add you as bestie', 'Add_bestie', 4, '2021-12-02 14:48:31', 1);
 
 -- ----------------------------
 -- Table structure for tb_statusbar
@@ -782,7 +794,7 @@ CREATE TABLE `tb_statusbar`  (
   `send_to` int(11) NULL DEFAULT NULL,
   `created_at` timestamp(0) NOT NULL DEFAULT current_timestamp(0),
   PRIMARY KEY (`statusid`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 23 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 29 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of tb_statusbar
@@ -807,6 +819,12 @@ INSERT INTO `tb_statusbar` VALUES (19, 7, 'letter', 'My bestie', 2, '2021-01-07 
 INSERT INTO `tb_statusbar` VALUES (20, 2, 'story', 'sdcsdcsdcdcsdc', 2, '2021-11-17 17:09:04');
 INSERT INTO `tb_statusbar` VALUES (21, 2, 'slogan', 'sdcsecdc', 2, '2021-11-17 17:11:23');
 INSERT INTO `tb_statusbar` VALUES (22, 2, 'letter', 'asdcaecdc', 2, '2021-11-17 17:12:49');
+INSERT INTO `tb_statusbar` VALUES (23, 2, 'slogan', 'sdcsdc', 3, '2021-12-02 14:43:34');
+INSERT INTO `tb_statusbar` VALUES (24, 2, 'story', 'This is our story', 3, '2021-12-02 23:41:07');
+INSERT INTO `tb_statusbar` VALUES (25, 2, 'letter', 'This is word for my best friend', 3, '2021-12-02 23:41:41');
+INSERT INTO `tb_statusbar` VALUES (26, 2, 'slogan', 'sdfvsdfv', 0, '2021-12-03 06:10:10');
+INSERT INTO `tb_statusbar` VALUES (27, 2, 'story', 'sadfghjm,.', 0, '2021-12-03 06:51:14');
+INSERT INTO `tb_statusbar` VALUES (28, 2, 'letter', 'This is the test', 0, '2021-12-03 07:02:17');
 
 -- ----------------------------
 -- Table structure for tb_user

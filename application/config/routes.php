@@ -120,7 +120,6 @@ $route['api/v1/create_personalmatch']['post']                 = 'api/v1/User/cre
 $route['api/v1/create_closedmatch']['post']                 = 'api/v1/User/create_closedmatch';
 $route['api/v1/ClosedMatch']['post']                 = 'api/v1/User/ClosedMatch';
 $route['api/v1/personallike']['post']                 = 'api/v1/Like/personallike';
-$route['api/v1/bestielike']['post']                 = 'api/v1/User/Bestielike';
 $route['api/v1/RemoveBesties']['post']              = 'api/v1/User/RemoveBesties';
 
 $route['api/v1/DeleteBestieComment']['post']              = 'api/v1/User/DeleteBestieComment';
@@ -147,3 +146,7 @@ $route['api/v1/getBestieList']['post']                 = 'api/v1/Bestie/getBesti
 // Bestie Comment
 $route['api/v1/BestieComment']['post']              = 'api/v1/BestieComment/add';
 $route['api/v1/GetBestieComment']['post']              = 'api/v1/BestieComment/all';
+
+
+// Bestie Like
+$route['api/v1/bestielike']['post']                 = 'api/v1/Bestielike/add';
