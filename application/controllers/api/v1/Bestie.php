@@ -85,6 +85,10 @@ class Bestie extends BaseController
         $filter["category"] = "bestie";
 
         $bestielist = $this->Bestie->getBestieList($filter);
-        print_r($bestielist);
+        $post = array(
+            "status" => true,
+            "details" => $bestielist
+        );
+        $this->response($post);
     }
 }

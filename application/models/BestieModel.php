@@ -23,9 +23,11 @@ class BestieModel  extends AbstractModel
         LEFT JOIN (SELECT *, COUNT(bestie_id) count FROM tb_bestiecomment GROUP BY bestie_id) bestiecomment ON bestiecomment.bestie_id = tb_bestie.bestie_id
         LEFT JOIN (SELECT *, COUNT(bestie_id) count FROM tb_bestielike GROUP BY bestie_id) bestielike ON bestielike.bestie_id = tb_bestie.bestie_id
         WHERE req_from = '".$filter['req_from'] ."' and category = 'bestie' and req_status = '1'";
-        
-        return $this->db->query($query)->result();
-
+        $result = $this->db->query($query)->result();
+        foreach($result as $index =>$user){
+            $result[$index]->pic = getProfileImage((array)$user);
+        }
+        return $result;
     }
     public function getSquadList($id){
         $filter["req_from"] = $id;
