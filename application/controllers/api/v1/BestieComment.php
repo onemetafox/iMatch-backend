@@ -31,13 +31,11 @@ class BestieComment extends BaseController
 
         foreach ($output as $result) {
 
-            $cid = $result['id'];
-            $uid = $result['userid'];
-
-            $commentarray = $this->BestieComment->count(array("bestie_id"=>$filter["bestie_id"],"is_active"=>0,"replied_commentid"=>$cid));
+            $filter["replied_commentid"] = $result->id;
+            $commentarray = $this->BestieComment->count($filter);
             $likearray = $this->BestieCommentLike->count(array("commentid"=>$cid));
 
-            $output = $this->User->select($uid);
+            $output = $this->User->select($result->userid);
             
             $pic = getProfileImage((array)$output);
             $repliedcommentarray = array();
@@ -98,7 +96,7 @@ class BestieComment extends BaseController
                 'replied_comments' => $repliedcommentarray,
             );
         }
-        $post = array("detail"=> $data,"status"=>true);
+        $post = array("details"=> $data,"status"=>true);
         $this->response($post);
     }
 }
