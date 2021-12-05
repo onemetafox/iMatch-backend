@@ -91,4 +91,13 @@ class Bestie extends BaseController
         );
         $this->response($post);
     }
+    public function getActionLog (){
+        $filter = $this->input->post();
+        $data = $this->Bestie->actionLogs($filter);
+        $post =array (
+            "status" => true,
+            "details" => $data
+        );
+        $this->response($post);
+    }
 }

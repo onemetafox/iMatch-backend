@@ -81,4 +81,14 @@ class BestieModel  extends AbstractModel
         }
         return $squad_list;
     }
+    public function actionLogs($filter){
+        $this->db->select("tb_actionlog.*, tb_user.*");
+        $this->db->join("tb_actionlog", "tb_bestie.req_to = tb_actionlog.user_id");
+        $this->db->join("tb_user", "tb_actionlog.user_id = tb_user.id");
+        $actions = parent::all($filter);
+        foreach($actions as $index =>$user){
+            $actions[$index]->pic = getProfileImage((array)$user);
+        }
+        return $actions;
+    }
 }

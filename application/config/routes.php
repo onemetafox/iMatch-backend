@@ -141,7 +141,7 @@ $route['api/v1/add_bestie']['post']              = 'api/v1/Bestie/add_bestie';
 $route['api/v1/changeBestieStatus']['post']              = 'api/v1/Bestie/changeBestieStatus';
 $route['api/v1/getSquadList']['post']              = 'api/v1/Bestie/getSquadList';
 $route['api/v1/getBestieList']['post']                 = 'api/v1/Bestie/getBestieList';
-
+$route['api/v1/BestieAction']['post']              = 'api/v1/Bestie/getActionLog';
 
 // Bestie Comment
 $route['api/v1/BestieComment']['post']              = 'api/v1/BestieComment/add';
@@ -151,5 +151,4 @@ $route['api/v1/GetBestieComment']['post']              = 'api/v1/BestieComment/a
 // Bestie Like
 $route['api/v1/bestielike']['post']                 = 'api/v1/Bestielike/add';
 
-// Action Log
-$route['api/v1/BestieAction']['post']              = 'api/v1/ActionLog/all';
+
