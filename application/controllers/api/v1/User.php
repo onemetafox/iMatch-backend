@@ -808,25 +808,6 @@ class User extends BaseController
         }
         echo  json_encode($data);
     }
-    public function BestieAction()
-    {
-        $user_data = $this->UserModel->bestiesaction();
-        if (!empty($user_data)) {
-            $data = array(
-                'status'  => true,
-                'message' => 'success',
-                'details' => $user_data
-
-            );
-        } else {
-            $data = array(
-                'status'  => false,
-                'message' => 'no data existing',
-                'details' => []
-            );
-        }
-        echo  json_encode($data);
-    }
     public function GetMap()
     {
         $user_data = $this->UserModel->get_map();

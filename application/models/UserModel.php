@@ -2891,8 +2891,6 @@ class UserModel  extends AbstractModel
         'likes' => $squadcount,
         'comments' => '',
       );
-      // print_r($data['Fifth_headline']);
-      // die();
     }
     /*End of Fifth headline */
     /*Start of Sixth headline */
@@ -2906,21 +2904,6 @@ class UserModel  extends AbstractModel
       'likes' => '',
       'comments' => '',
     );
-    /*End of Sixth headline */
-    /*Start of Seventh headline */
-    // $data['Seventh_headline'] =array(
-    //   'userid'        =>'',
-    //   'name'      => '',
-    //   'email'       => '',
-    //   'university_name' => '',
-    //   'profile_pic'      =>'',
-    //   'category'       => " ",
-    //   'likes' =>'',
-    //   'comments' => '',
-    // );
-    /*End of Seventh headline */
-    // print_r($data);
-    // die();
     return $data;
   } //Headline function end
   public function get_map()
@@ -2953,81 +2936,7 @@ class UserModel  extends AbstractModel
     return $address;
     die();
   }
-  public function bestiesaction()
-  {
-    date_default_timezone_set('Asia/Kolkata');
-    $current_date    = date('Y-m-d H:i:s');
-    $id = $this->input->post('userid');
-    // echo $id;
-    $query = $this->db->query("SELECT * FROM `tb_bestie` WHERE (req_from='$id' or req_to='$id') and category='bestie'");
-    // echo "SELECT * FROM `tb_bestie` WHERE req_from='$id' or req_to='$id' ";
-    $result_array =  $query->result_array();
-    //  print_r( $result_array);die();
-    $data = array();
-    foreach ($result_array as $results) {
-      // print_r($results['req_from']);die();
-      if ($results['req_from'] == $id) {
-        $userid = $results['req_to'];
-      } else {
-        $userid = $results['req_from'];
-      }
-      //  echo $userid.' the bestie id'; 
-      $result_query = $this->db->query("SELECT * FROM `tb_user` WHERE id='$userid'");
-      $output =  $result_query->row();
-
-      if (!empty($output->profile_pic)) {
-        $string = $output->profile_pic;
-        if (preg_match('/[\'^£$%&*()}{@#~?><>,|=_+¬-]/', $string)) {
-          // one or more of the 'special characters' found in $string
-          // echo "found";
-          $pic = $output->profile_pic;
-        } else {
-          // echo "not found";
-          $pic = base_url() . 'uploads/profile_image/' . $output->profile_pic;
-        }
-      } else {
-        // echo "not found";
-        $pic = base_url() . 'uploads/profile_image/user.png';
-      }
-      //  echo "select * from tb_match WHERE (rival_id='$userid' or opponent_id='$userid') and invitation_status='accept' and '$current_date' between replied_at and match_end";die();
-      // $result = $this->db->query("select *,time(replied_at) as start_time from tb_match WHERE (rival_id='$userid' or opponent_id='$userid') and invitation_status='accept' and '$current_date' between replied_at and match_end");
-      // $result = $this->db->query("select *,time(replied_at) as start_time from tb_match WHERE (rival_id='$userid' or opponent_id='$userid') and invitation_status='accept' and '$current_date' between replied_at and match_end");
-      $result = $this->db->query("select *,time(replied_at) as start_time from tb_match  WHERE rival_id='$userid' and opponent_id='$id' and invitation_status='accept' ");
-      if ($this->db->affected_rows() > 0) {
-        $result_array = $result->result_array();
-        foreach ($result_array as $result) {
-          $current_time = date('H:i:s');
-          $stime = $result['start_time'];
-          $start_date = new DateTime($stime);
-          $since_start = $start_date->diff(new DateTime($current_time));
-          // echo $since_start->days.' days total<br>';
-          // echo $since_start->y.' years<br>';
-          // echo $since_start->m.' months<br>';
-          // echo $since_start->d.' days<br>';
-          // echo $since_start->h.' hours<br>';
-          // echo $since_start->i.' minutes<br>';
-          // echo $since_start->s.' seconds<br>';
-          $minutes = $since_start->days * 24 * 60;
-          $minutes += $since_start->h * 60;
-          $minutes += $since_start->i;
-          // echo $minutes.' minutes';
-          $mins = $minutes;
-          // die();
-          $data[] =  array(
-            // 'match_id'        => $result['matchid'],
-            // 'userid'=>$userid,
-            'username' => $output->name,
-            'userprofile' => $pic,
-            'sender_image' => base_url() . 'assets/images/splash.jpg',
-            'receiver_image' => base_url() . 'assets/images/splash.jpg',
-            'time' => $mins
-          );
-        }
-      }
-    }
-    //  print_r($data);die();
-    return $data;
-  }
+  
   public function getAdminMessage()
   {
     $id = $this->input->post('userid');
