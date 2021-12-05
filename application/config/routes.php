@@ -79,7 +79,7 @@ $route['api/v1/add_fan']['post']              = 'api/v1/User/add_fan';
 $route['api/v1/RemoveFans']['post']              = 'api/v1/User/RemoveFans';
 $route['api/v1/Headline']['post']              = 'api/v1/User/Headline';
 $route['api/v1/ActivityPage']['post']              = 'api/v1/User/ActivityPage';
-$route['api/v1/BestieAction']['post']              = 'api/v1/User/BestieAction';
+
 $route['api/v1/GetAdminMessage']['post']              = 'api/v1/User/GetAdminMessage';
 $route['api/v1/AnswerMessage']['post']              = 'api/v1/User/AnswerMessage';
 $route['api/v1/CommentLike']['post']              = 'api/v1/User/CommentLike';
@@ -150,3 +150,6 @@ $route['api/v1/GetBestieComment']['post']              = 'api/v1/BestieComment/a
 
 // Bestie Like
 $route['api/v1/bestielike']['post']                 = 'api/v1/Bestielike/add';
+
+// Action Log
+$route['api/v1/BestieAction']['post']              = 'api/v1/ActionLog/all';
