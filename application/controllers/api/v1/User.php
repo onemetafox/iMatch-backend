@@ -1668,7 +1668,15 @@ class User extends BaseController
                 }
             }
         }
-        echo  json_encode($post);
+        $user = $this->User->select($userid);
+        $actionLog = array(
+            "user_id" => $userid,
+            "title" => $user->name . "Created Closed Match",
+            "type" => "Closed Match",
+            "created_at" => date("Y-m-d H:s:i");
+        );
+        $this->ActionLog->save($actionLog);
+        $this->response($post);
     }
     public function testmail()
     {
@@ -1756,7 +1764,15 @@ class User extends BaseController
                 }
             }
         }
-        echo  json_encode($post);
+        $user = $this->User->select($userid);
+        $actionLog = array(
+            "user_id" => $userid,
+            "title" => $user->name . "Created Personal Match",
+            "type" => "Personal Match",
+            "created_at" => date("Y-m-d H:s:i");
+        );
+        $this->ActionLog->save($actionLog);
+        this->response($post);
     }
     public function create_closedmatch()
     {
@@ -1818,7 +1834,15 @@ class User extends BaseController
                 }
             }
         }
-        echo  json_encode($post);
+        $user = $this->User->select($rival_userid);
+        $actionLog = array(
+            "user_id" => $rival_userid,
+            "title" => $user->name . "Created Closed Match",
+            "type" => "Closed Match",
+            "created_at" => date("Y-m-d H:s:i");
+        );
+        $this->ActionLog->save($actionLog);
+        $this->response($post);
     }
     public function ClosedMatch()
     {
