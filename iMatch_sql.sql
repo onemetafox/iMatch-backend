@@ -11,11 +11,24 @@
  Target Server Version : 100418
  File Encoding         : 65001
 
- Date: 03/12/2021 10:09:33
+ Date: 05/12/2021 12:13:10
 */
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+-- Table structure for tb_actionlog
+-- ----------------------------
+DROP TABLE IF EXISTS `tb_actionlog`;
+CREATE TABLE `tb_actionlog`  (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `type` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `title` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `created_at` datetime(6) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for tb_adminmessage
@@ -79,18 +92,29 @@ DROP TABLE IF EXISTS `tb_bestiecomment`;
 CREATE TABLE `tb_bestiecomment`  (
   `commentid` int(11) NOT NULL AUTO_INCREMENT,
   `bestie_id` int(11) NOT NULL,
-  `is_active` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  `replied_commentid` int(11) NULL DEFAULT NULL,
+  `is_active` tinyint(1) NULL DEFAULT 0,
+  `replied_commentid` int(11) NULL DEFAULT 0,
   `comment` text CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
   `userid` int(11) NULL DEFAULT NULL,
   `commented_at` datetime(6) NULL DEFAULT NULL,
   PRIMARY KEY (`commentid`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of tb_bestiecomment
 -- ----------------------------
-INSERT INTO `tb_bestiecomment` VALUES (1, 2, '1', NULL, 'dsfvsdfsdf', 2, '2021-12-15 02:23:20.000000');
+INSERT INTO `tb_bestiecomment` VALUES (1, 2, 1, NULL, 'dsfvsdfsdf', 2, '2021-12-15 02:23:20.000000');
+INSERT INTO `tb_bestiecomment` VALUES (6, 2, 0, NULL, 'asdcasdc', 2, '2021-12-03 21:07:02.000000');
+INSERT INTO `tb_bestiecomment` VALUES (7, 2, 0, NULL, 'asdcasdc', 2, '2021-12-03 21:09:02.000000');
+
+-- ----------------------------
+-- Table structure for tb_bestiecommentlike
+-- ----------------------------
+DROP TABLE IF EXISTS `tb_bestiecommentlike`;
+CREATE TABLE `tb_bestiecommentlike`  (
+  `commentid` int(11) NOT NULL,
+  PRIMARY KEY (`commentid`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for tb_bestielike
@@ -99,6 +123,7 @@ DROP TABLE IF EXISTS `tb_bestielike`;
 CREATE TABLE `tb_bestielike`  (
   `bestie_id` int(11) NOT NULL AUTO_INCREMENT,
   `like_status` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `user_liked` int(11) NULL DEFAULT NULL,
   PRIMARY KEY (`bestie_id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
@@ -112,7 +137,12 @@ CREATE TABLE `tb_bestmoment`  (
   `userid` int(11) NULL DEFAULT NULL,
   `created_at` timestamp(0) NULL DEFAULT current_timestamp(0),
   PRIMARY KEY (`momentid`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of tb_bestmoment
+-- ----------------------------
+INSERT INTO `tb_bestmoment` VALUES (1, 'dfgdfg', 2, '2021-12-03 13:08:06');
 
 -- ----------------------------
 -- Table structure for tb_bestmomentupload
@@ -639,13 +669,14 @@ CREATE TABLE `tb_momentlike`  (
   `like_status` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
   `updated_at` timestamp(0) NULL DEFAULT NULL,
   PRIMARY KEY (`momentlike_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of tb_momentlike
 -- ----------------------------
 INSERT INTO `tb_momentlike` VALUES (1, 1, 1, 'like', '2020-12-14 20:23:32');
 INSERT INTO `tb_momentlike` VALUES (2, 1, 2, 'dislike', '2020-12-15 13:30:19');
+INSERT INTO `tb_momentlike` VALUES (3, 2, 1, 'dislike', '2021-12-04 02:38:21');
 
 -- ----------------------------
 -- Table structure for tb_myiquery
