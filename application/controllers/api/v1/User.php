@@ -1654,7 +1654,7 @@ class User extends BaseController
             "user_id" => $userid,
             "title" => $user->name . "Created Closed Match",
             "type" => "Closed Match",
-            "created_at" => date("Y-m-d H:s:i");
+            "created_at" => date("Y-m-d H:s:i")
         );
         $this->ActionLog->save($actionLog);
         $this->response($post);
@@ -1750,10 +1750,10 @@ class User extends BaseController
             "user_id" => $userid,
             "title" => $user->name . "Created Personal Match",
             "type" => "Personal Match",
-            "created_at" => date("Y-m-d H:s:i");
+            "created_at" => date("Y-m-d H:s:i")
         );
         $this->ActionLog->save($actionLog);
-        this->response($post);
+        $this->response($post);
     }
     public function create_closedmatch()
     {
@@ -1820,7 +1820,7 @@ class User extends BaseController
             "user_id" => $rival_userid,
             "title" => $user->name . "Created Closed Match",
             "type" => "Closed Match",
-            "created_at" => date("Y-m-d H:s:i");
+            "created_at" => date("Y-m-d H:s:i")
         );
         $this->ActionLog->save($actionLog);
         $this->response($post);
