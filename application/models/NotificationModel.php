@@ -10,7 +10,6 @@ class NotificationModel  extends AbstractModel
         $this->db->select("tb_user.*");
         $this->db->join("tb_user", "tb_user.id = tb_notification.receiver_id","LEFT");
         $data = parent::all($filter);
-        print_r($this->db->last_query());
         foreach($data as $index =>$user){
             $data[$index]->pic = getProfileImage((array)$user);
         }

@@ -136,6 +136,7 @@ $route['api/v1/getNotification/(:any)']['get']              = 'api/v1/Notificati
 $route['api/v1/setNotificationRead']['post']              = 'api/v1/Notification/setNotificationRead';
 $route['api/v1/getNotifications']['post']              = 'api/v1/Notification/all';
 
+
 // Bestie API
 $route['api/v1/getBestieRequest']['post']              = 'api/v1/Bestie/getBestieRequest';
 $route['api/v1/add_bestie']['post']              = 'api/v1/Bestie/add_bestie';

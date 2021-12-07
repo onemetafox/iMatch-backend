@@ -37,8 +37,24 @@ class Notification extends BaseController
 
     public function setNotificationRead(){
         $filter = $this->input->post();
-        $data['read_status'] = 2;
-        $this->Notification->update($data, $filter);
+        if($filter["type"] == "Add_bestie"){
+            $bestie["bestie_id"] = $filter["request_id"];
+            $bestie["req_status"] = $filter["req_status"];
+            $bestie["read_status"] = 1;
+            $this->Bestie->save($bestie);
+        }
+        $notification["not_id"] = $filter["not_id"];
+        $notification["read_status"] = 2;
+        $data = $this->Notification->select($filter["not_id"]);
+        $user = $this->User->select($data->sender_id);
+        $from = $this->User->select($data->receiver_id);
+        if($filter["req_status"] == "1"){
+            $message = "You invitation is accepted by " . $from->name;
+        }else{
+            $message = "You invitation is rejected by " . $from->name;
+        }
+        $this->push($user->device_token, $message, $user->device_type);
+        $this->Notification->save($notification);
         $this->response(array("status"=>true, "message"=>"change notification status"));
     }
     public function all(){
