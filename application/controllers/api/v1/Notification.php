@@ -41,4 +41,13 @@ class Notification extends BaseController
         $this->Notification->update($data, $filter);
         $this->response(array("status"=>true, "message"=>"change notification status"));
     }
+    public function all(){
+        $filter = $this->input->post();
+        $data = $this->Notification->getAll($filter);
+        $post = array(
+            "status" => true,
+            "details" => $data
+        );
+        $this->response($post);
+    }
 }
