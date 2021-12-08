@@ -11,6 +11,23 @@ class User extends BaseController
         parent::__construct();
         $this->load->model('UserModel');
     }
+    public function UploadAvatar(){
+        $config['upload_path']   = './uploads/Avataruploads';
+        $config['allowed_types'] = '*';
+        $config['encrypt_name']  = true;
+        $this->load->library('upload', $config);
+        if (!$this->upload->do_upload('avatarfile')) {
+            $error = array('error' => $this->upload->display_errors());
+            $this->response($error);
+        } else {
+            $upload_data = $this->upload->data();
+            $filename = $upload_data['file_name'];
+        }
+        $data = $this->input->post();
+        $data['profile_pic'] = $filename;
+        $results = $this->UserModel->save($data);
+        $this->response(array("status"=> true, "details"=>$results));
+    }
     public function register()
     {
         $name = $this->input->post('name');

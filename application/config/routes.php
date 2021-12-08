@@ -60,6 +60,7 @@ $route['api/v1/Listusers']['post']                 = 'api/v1/User/Listusers';
 $route['api/v1/profile']['post']              = 'api/v1/User/profile';
 $route['api/v1/profile_pic']['post']              = 'api/v1/User/profile_pic';
 $route['api/v1/get_profile_pic/(:any)']['get']  = 'api/v1/User/get_profile_pic/$1';
+$route['api/v1/UploadAvatar']['post']                 = 'api/v1/User/UploadAvatar';
 
 $route['api/v1/get_notification']['post']  = 'api/v1/User/get_notification';
 $route['api/v1/accept_or_reject']['post']              = 'api/v1/User/accept_or_reject';

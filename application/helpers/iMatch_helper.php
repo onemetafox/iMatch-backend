@@ -7,7 +7,7 @@ defined('BASEPATH') OR ('No direct script access allowed');
         if (preg_match('/[\'^£$%&*()}{@#~?><>,|=_+¬-]/', $string)) {
             $pic = $user['profile_pic'];
         } else {
-            $pic = base_url() . 'uploads/profile_image/' . $user['profile_pic'];
+            $pic = base_url() . 'uploads/Avataruploads/' . $user['profile_pic'];
         }
         } else {
             $pic = base_url() . 'uploads/profile_image/user.png';
