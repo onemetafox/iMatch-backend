@@ -3,6 +3,11 @@ defined('BASEPATH') or exit('No direct script access allowed');
 require APPPATH . '/core/BaseController.php';
 class BestieComment extends BaseController
 {
+    public function __construct()
+    {   
+        parent::__construct();
+        $this->load->model('BestieCommentModel', "model");
+    }
 
     public function add (){
         $data = $this->input->post();

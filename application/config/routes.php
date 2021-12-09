@@ -104,6 +104,8 @@ $route['api/v1/GetDetailChat']['post']                 = 'api/v1/User/GetDetailC
 $route['api/v1/Online_Offline_status']['post']                 = 'api/v1/User/Online_Offline_status';
 $route['api/v1/BestMoment']['post']                 = 'api/v1/User/BestMoment';
 $route['api/v1/UploadBestieMomentFile']['post']                 = 'api/v1/User/UploadBestieMomentFile';
+$route['api/v1/updateUser']['post']                 = 'api/v1/User/updateUser';
+
 $route['api/v1/GetBestMoment']['post']                 = 'api/v1/User/GetBestMoment';
 $route['api/v1/MatchFileUpload']['post']                 = 'api/v1/User/MatchFileUpload';
 $route['api/v1/UploadChatFile']['post']                 = 'api/v1/User/UploadChatFile';

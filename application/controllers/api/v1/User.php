@@ -9,7 +9,7 @@ class User extends BaseController
     public function __construct()
     {   
         parent::__construct();
-        $this->load->model('UserModel');
+        $this->load->model('UserModel', "model");
     }
     public function UploadAvatar(){
         $config['upload_path']   = './uploads/Avataruploads';
@@ -25,7 +25,7 @@ class User extends BaseController
         }
         $data = $this->input->post();
         $data['profile_pic'] = $filename;
-        $results = $this->UserModel->save($data);
+        $results = $this->model->save($data);
         $this->response(array("status"=> true, "details"=>$results));
     }
     public function register()
@@ -54,7 +54,7 @@ class User extends BaseController
             // 'latitude' => $long,
             // 'longitude' => $lat
         );
-        $result = $this->UserModel->register($data);
+        $result = $this->model->register($data);
         if (!empty($result)) {
             $post = array(
                 'status'  => true,
@@ -75,7 +75,7 @@ class User extends BaseController
 
     public function login()
     {
-        $user_data = $this->UserModel->login();
+        $user_data = $this->model->login();
         if ($user_data == "notexist") {
             $data = array(
                 'status'  => false,
@@ -154,7 +154,7 @@ class User extends BaseController
         //     $pass[] = $alphabet[$n];
         // }
         // $password = implode($pass);
-        // $user_data = $this->UserModel->forget_password($email, $password);
+        // $user_data = $this->model->forget_password($email, $password);
         // if ($user_data == true) {
 
         //     $data = array(
@@ -172,8 +172,8 @@ class User extends BaseController
     }
     public function Listusers()
     {
-        $user_data['name'] = $this->UserModel->list_users();
-        // $user_data['userdetails'] = $this->UserModel->listusers();
+        $user_data['name'] = $this->model->list_users();
+        // $user_data['userdetails'] = $this->model->listusers();
         if (!empty($user_data)) {
             $data = array(
                 'status'  => true,
@@ -193,7 +193,7 @@ class User extends BaseController
     public function profile()
     {
 
-        $result = $this->UserModel->updateprofile();
+        $result = $this->model->updateprofile();
         if (!empty($result)) {
             $post = array(
                 'status'  => true,
@@ -233,7 +233,7 @@ class User extends BaseController
             $image = $upload_data['file_name'];
         }
         if (!empty($image)) {
-            $user_data = $this->UserModel->profilepicupdate($image);
+            $user_data = $this->model->profilepicupdate($image);
         }
         
         if (!empty($user_data)) {
@@ -255,7 +255,7 @@ class User extends BaseController
         }
     }
     public function get_pending_match($user_id){
-        $result = $this->UserModel->getPendingMatch($user_id);
+        $result = $this->model->getPendingMatch($user_id);
         if (!empty($result)) {
             $post = array(
                 'status'  => true,
@@ -276,7 +276,7 @@ class User extends BaseController
     public function get_profile_pic($userid)
     {
 
-        $result = $this->UserModel->getprofilepic($userid);
+        $result = $this->model->getprofilepic($userid);
         if (!empty($result)) {
             $post = array(
                 'status'  => true,
@@ -297,7 +297,7 @@ class User extends BaseController
 
     public function get_notification()
     {
-        $result = $this->UserModel->get_notification();
+        $result = $this->model->get_notification();
         if (!empty($result)) {
             $post = array(
                 'status'  => true,
@@ -315,7 +315,7 @@ class User extends BaseController
     }
     public function startPendingMatch(){
         $matchid = $this->input->post('matchId');
-        $result = $this->UserModel->startPendingMatch($matchid);
+        $result = $this->model->startPendingMatch($matchid);
         if ($result == 'success') {
             $post = array(
                 'status'  => true,
@@ -327,7 +327,7 @@ class User extends BaseController
     }
     public function accept_or_reject()
     {
-        $result = $this->UserModel->accept_or_reject();
+        $result = $this->model->accept_or_reject();
         if ($result == "success") {
             $post = array(
                 'status'  => true,
@@ -344,8 +344,8 @@ class User extends BaseController
     public function Listbesties()
     {
         $id = $this->input->post('id');
-        $user_data['besties'] = $this->UserModel->list_besties($id);
-        $user_data['squad'] = $this->UserModel->list_squad($id);
+        $user_data['besties'] = $this->model->list_besties($id);
+        $user_data['squad'] = $this->model->list_squad($id);
         $user_data['fan'] = $this->Fan->fanList($id, "fan");
         $user_data['fan_of'] = $this->Fan->fanList($id, "fan_of");
         if (!empty($user_data)) {
@@ -366,7 +366,7 @@ class User extends BaseController
     }
     public function statusbar()
     {
-        $result = $this->UserModel->statusbar();
+        $result = $this->model->statusbar();
         if (!empty($result)) {
             $post = array(
                 'status'  => true,
@@ -385,13 +385,13 @@ class User extends BaseController
     }
     public function GetStatus()
     {
-        $result['story'] = $this->UserModel->getstatus();
-        $result['letter'] = $this->UserModel->getstatus_letter();
-        $result['slogan'] = $this->UserModel->getstatus_slogan();
+        $result['story'] = $this->model->getstatus();
+        $result['letter'] = $this->model->getstatus_letter();
+        $result['slogan'] = $this->model->getstatus_slogan();
         
-        $link = $this->UserModel->getuploadfile();
-        $total_like_count = $this->UserModel->gettotallikecount();
-        $total_comment_count = $this->UserModel->gettotalcommentcount();
+        $link = $this->model->getuploadfile();
+        $total_like_count = $this->model->gettotallikecount();
+        $total_comment_count = $this->model->gettotalcommentcount();
         if (!empty($result)) {
             $post = array(
                 'status'  => true,
@@ -430,11 +430,11 @@ class User extends BaseController
         $data['filename'] = $filename;
         $data['filetype'] = 'file';
         $data['created_at'] = date("Y-m-d H:s:i");
-        $results = $this->UserModel->savefile($data);
+        $results = $this->model->savefile($data);
         // if (!empty($filename)) {
         // $ex_result = explode(".", $filename);
         // $extension = $ex_result[1];
-        //     $result = $this->UserModel->match_fileupload($filename);
+        //     $result = $this->model->match_fileupload($filename);
         //     // print_r($result);die();
         //     if (!empty($result)) {
         //         if ($result == "success") {
@@ -502,11 +502,11 @@ class User extends BaseController
         // }else{
         //     $imagename=" ";
         // }
-        $result = $this->UserModel->match_invitation();
+        $result = $this->model->match_invitation();
         // print_r($result);die();
         if (!empty($result)) {
             if ($result == "exist") {
-                // $results= $this->UserModel->get_existingmatch();
+                // $results= $this->model->get_existingmatch();
                 $post = array(
                     'status'  => false,
                     'message' => 'Invitation Already Given'
@@ -535,7 +535,7 @@ class User extends BaseController
     public function Match_reply()
     {
         $data = $this->input->post();
-        $result = $this->UserModel->matchReject($data);
+        $result = $this->model->matchReject($data);
         if ($result == "success") {
             $post = array(
                 'status'  => true,
@@ -558,8 +558,8 @@ class User extends BaseController
     }
     public function AllInvitation()
     {
-        $result = $this->UserModel->get_myinvitation();
-        // $files = $this->UserModel->getmyinvitation_files();
+        $result = $this->model->get_myinvitation();
+        // $files = $this->model->getmyinvitation_files();
         // if (!empty($files)) {
         //     $files = $files;
         // } else {
@@ -583,7 +583,7 @@ class User extends BaseController
     }
     public function PersonalMatch()
     {
-        $result = $this->UserModel->get_personalmatch();
+        $result = $this->model->get_personalmatch();
         if($result){
             $data = array(
                 'status'  => true,
@@ -601,13 +601,13 @@ class User extends BaseController
     }
     public function OpenMatch()
     {
-        $result = $this->UserModel->get_openmatch();
+        $result = $this->model->get_openmatch();
        
         echo  json_encode($result);
     }
     public function OngoingMatch()
     {
-        $result = $this->UserModel->get_ongoingmatch();
+        $result = $this->model->get_ongoingmatch();
         if($result){
             $data = array(
                 'status'  => true,
@@ -643,7 +643,7 @@ class User extends BaseController
     {
         // echo $id;die();
         $status = $this->input->post('status');
-        $result = $this->UserModel->like();
+        $result = $this->model->like();
         if ($result == "success") {
             if ($status == "like") {
                 $post = array(
@@ -674,7 +674,7 @@ class User extends BaseController
     public function Comment()
     {
         // echo $id;die();
-        $result = $this->UserModel->addcomment();
+        $result = $this->model->addcomment();
         if ($result == "success") {
             $post = array(
                 'status'  => true,
@@ -698,8 +698,8 @@ class User extends BaseController
     public function GetComment()
     {
         // echo $id;die();
-        $result = $this->UserModel->getComment();
-        $result_reply = $this->UserModel->getreplyComment();
+        $result = $this->model->getComment();
+        $result_reply = $this->model->getreplyComment();
         if (!empty($result)) {
             $post = array(
                 'status'  => true,
@@ -757,7 +757,7 @@ class User extends BaseController
     public function Headline()
     {
         // echo $id;die();
-        $result = $this->UserModel->getHeadline();
+        $result = $this->model->getHeadline();
         if (!empty($result)) {
             $post = array(
                 'status'  => true,
@@ -776,7 +776,7 @@ class User extends BaseController
     }
     public function RemoveFans()
     {
-        $result = $this->UserModel->RemoveFans();
+        $result = $this->model->RemoveFans();
         if ($result == "success") {
             $post = array(
                 'status'  => true,
@@ -792,7 +792,7 @@ class User extends BaseController
     }
     public function RemoveBesties()
     {
-        $result = $this->UserModel->RemoveBesties();
+        $result = $this->model->RemoveBesties();
         if ($result == "success") {
             $post = array(
                 'status'  => true,
@@ -808,7 +808,7 @@ class User extends BaseController
     }
     public function ActivityPage()
     {
-        $user_data = $this->UserModel->get_categorycount();
+        $user_data = $this->model->get_categorycount();
         if (!empty($user_data)) {
             $data = array(
                 'status'  => true,
@@ -827,14 +827,14 @@ class User extends BaseController
     }
     public function GetMap()
     {
-        $user_data = $this->UserModel->get_map();
+        $user_data = $this->model->get_map();
 
         echo  json_encode($user_data);
     }
     public function GetAdminMessage()
     {
         // echo $id;die();
-        $result = $this->UserModel->getAdminMessage();
+        $result = $this->model->getAdminMessage();
         if (!empty($result)) {
             $post = array(
                 'status'  => true,
@@ -853,7 +853,7 @@ class User extends BaseController
     }
     public function AnswerMessage()
     {
-        $result = $this->UserModel->getMessageAnswer();
+        $result = $this->model->getMessageAnswer();
         // print_r($result);die();
         if ($result == "success") {
             $post = array(
@@ -871,7 +871,7 @@ class User extends BaseController
     public function CommentLike()
     {
         // echo $id;die();
-        $result = $this->UserModel->commentlike();
+        $result = $this->model->commentlike();
         // print_r($result);die();
         if ($result == "success") {
             $post = array(
@@ -907,7 +907,7 @@ class User extends BaseController
     }
     public function MyiQuery()
     {
-        $result = $this->UserModel->MyiQuery();
+        $result = $this->model->MyiQuery();
         // print_r($result);die();
         if ($result == "success") {
             $post = array(
@@ -933,7 +933,7 @@ class User extends BaseController
     public function GetMyiQuery()
     {
         // echo $id;die();
-        $result = $this->UserModel->GetMyiQuery();
+        $result = $this->model->GetMyiQuery();
         if (!empty($result)) {
             $post = array(
                 'status'  => true,
@@ -953,7 +953,7 @@ class User extends BaseController
     public function GetMyiQueryComment()
     {
         // echo $id;die();
-        $result = $this->UserModel->GetMyiQueryComment();
+        $result = $this->model->GetMyiQueryComment();
         if (!empty($result)) {
             $post = array(
                 'status'  => true,
@@ -973,7 +973,7 @@ class User extends BaseController
     public function CommentAnswer()
     {
         // echo 'hi';die();
-        $result = $this->UserModel->commentanswer();
+        $result = $this->model->commentanswer();
         if ($result == "success") {
             $post = array(
                 'status'  => true,
@@ -990,7 +990,7 @@ class User extends BaseController
     }
     public function RemoveiQuery()
     {
-        $result = $this->UserModel->RemoveiQuery();
+        $result = $this->model->RemoveiQuery();
         if ($result == "success") {
             $post = array(
                 'status'  => true,
@@ -1007,7 +1007,7 @@ class User extends BaseController
     public function Myiquerylike()
     {
         // echo $id;die();
-        $result = $this->UserModel->Myiquerylike();
+        $result = $this->model->Myiquerylike();
         // print_r($result);die();
         if ($result == "success") {
             $post = array(
@@ -1044,7 +1044,7 @@ class User extends BaseController
     public function Iquerycomment()
     {
         // echo $id;die();
-        $result = $this->UserModel->myiquerycomment();
+        $result = $this->model->myiquerycomment();
         if ($result == "success") {
             $post = array(
                 'status'  => true,
@@ -1068,7 +1068,7 @@ class User extends BaseController
     public function Top100()
     {
         // echo $id;die();
-        $result = $this->UserModel->Top100();
+        $result = $this->model->Top100();
         if (!empty($result)) {
             $post = array(
                 'status'  => true,
@@ -1087,8 +1087,8 @@ class User extends BaseController
     }
     public function BannerSearch()
     {
-        $user_data = $this->UserModel->BannerSearch();
-        // $user_data['userdetails'] = $this->UserModel->listusers();
+        $user_data = $this->model->BannerSearch();
+        // $user_data['userdetails'] = $this->model->listusers();
         if (!empty($user_data)) {
             $data = array(
                 'status'  => true,
@@ -1107,8 +1107,8 @@ class User extends BaseController
     }
     public function winners_of_the_moment()
     {
-        $user_data = $this->UserModel->winners_of_the_moment();
-        // $user_data['userdetails'] = $this->UserModel->listusers();
+        $user_data = $this->model->winners_of_the_moment();
+        // $user_data['userdetails'] = $this->model->listusers();
         if (!empty($user_data)) {
             $data = array(
                 'status'  => true,
@@ -1127,8 +1127,8 @@ class User extends BaseController
     }
     public function Recommended_for_you()
     {
-        $user_data = $this->UserModel->Recommended_for_you();
-        // $user_data['userdetails'] = $this->UserModel->listusers();
+        $user_data = $this->model->Recommended_for_you();
+        // $user_data['userdetails'] = $this->model->listusers();
         if (!empty($user_data)) {
             $data = array(
                 'status'  => true,
@@ -1167,7 +1167,7 @@ class User extends BaseController
         }
         // die();
         if (!empty($image)) {
-            $user_data = $this->UserModel->uploadedfile($image);
+            $user_data = $this->model->uploadedfile($image);
         }
         // echo "done";
         // print_r($user_data);
@@ -1194,7 +1194,7 @@ class User extends BaseController
     }
     public function Chat()
     {
-        $user_data = $this->UserModel->chat();
+        $user_data = $this->model->chat();
         if ($user_data == "success") {
             $data = array(
                 'status'        => true,
@@ -1212,7 +1212,7 @@ class User extends BaseController
     }
     public function GetChat()
     {
-        $user_data = $this->UserModel->getchat();
+        $user_data = $this->model->getchat();
         if (!empty($user_data)) {
             $data = array(
                 'status'        => true,
@@ -1231,7 +1231,7 @@ class User extends BaseController
     }
     public function GetDetailChat()
     {
-        $user_data = $this->UserModel->getdetailchat();
+        $user_data = $this->model->getdetailchat();
         if (!empty($user_data)) {
             $data = array(
                 'status'        => true,
@@ -1250,7 +1250,7 @@ class User extends BaseController
     }
     public function Online_Offline_status()
     {
-        $userdata = $this->UserModel->changechatstatus();
+        $userdata = $this->model->changechatstatus();
         if ($userdata == "success") {
             $data = array(
                 'status'        => true,
@@ -1268,7 +1268,7 @@ class User extends BaseController
     }
     public function BestMoment()
     {
-        $userdata = $this->UserModel->BestMoment();
+        $userdata = $this->model->BestMoment();
         if ($userdata == "fail") {
             $data = array(
                 'status'        => false,
@@ -1306,7 +1306,7 @@ class User extends BaseController
         }
         // die();
         if (!empty($image)) {
-            $user_data = $this->UserModel->uploadedbestmomentfile($image);
+            $user_data = $this->model->uploadedbestmomentfile($image);
         }
         // echo "done";
         // print_r($user_data);
@@ -1331,8 +1331,8 @@ class User extends BaseController
     }
     public function GetBestMoment()
     {
-        $userdata['moments'] = $this->UserModel->getBestMoment();
-        $userdata['moments_file'] = $this->UserModel->getBestMomentFile();
+        $userdata['moments'] = $this->model->getBestMoment();
+        $userdata['moments_file'] = $this->model->getBestMomentFile();
         if (!empty($userdata)) {
             $data = array(
                 'status'        => true,
@@ -1378,7 +1378,7 @@ class User extends BaseController
         }
         // die();
         if (!empty($filename)) {
-            $user_data = $this->UserModel->uploadedchatfile($filename);
+            $user_data = $this->model->uploadedchatfile($filename);
         }
         // echo "done";
         // print_r($user_data);
@@ -1407,7 +1407,7 @@ class User extends BaseController
     public function MomentLike()
     {
         // echo $id;die();
-        $result = $this->UserModel->MomentLike();
+        $result = $this->model->MomentLike();
         if ($result == "success") {
             $post = array(
                 'status'  => true,
@@ -1437,7 +1437,7 @@ class User extends BaseController
     public function MomentComment()
     {
         // echo $id;die();
-        $result = $this->UserModel->addmomentcomment();
+        $result = $this->model->addmomentcomment();
         if ($result == "success") {
             $post = array(
                 'status'  => true,
@@ -1461,7 +1461,7 @@ class User extends BaseController
     public function GetMomentComment()
     {
         // echo $id;die();
-        $result = $this->UserModel->getmomentcomment();
+        $result = $this->model->getmomentcomment();
         if (!empty($result)) {
             $post = array(
                 'status'  => true,
@@ -1483,7 +1483,7 @@ class User extends BaseController
     }
     public function acceptInvitation()
     {
-        $result = $this->UserModel->matchAccept();
+        $result = $this->model->matchAccept();
         $matchid = $this->input->post('matchid');
         $userid = $this->input->post('userid');
         $data = $this->input->post();
@@ -1508,7 +1508,7 @@ class User extends BaseController
                     'filetype' => 'link',
                     'created_at' => $current_date
                 );
-                $results = $this->UserModel->savefile($data);
+                $results = $this->model->savefile($data);
                 if ($results != "success") {
                     $post = array(
                         'status'  => false,
@@ -1527,7 +1527,7 @@ class User extends BaseController
                     'filetype' => 'text',
                     'created_at' => $current_date
                 );
-                $results = $this->UserModel->savefile($data);
+                $results = $this->model->savefile($data);
                 if ($results != "success") {
                     $post = array(
                         'status'  => false,
@@ -1542,7 +1542,7 @@ class User extends BaseController
     }
     public function GetUserdetails()
     {
-        $result = $this->UserModel->GetUserdetails();
+        $result = $this->model->GetUserdetails();
         if (!empty($result)) {
             $post = array(
                 'status'  => true,
@@ -1562,7 +1562,7 @@ class User extends BaseController
     public function ReplyComment()
     {
         // echo $id;die();
-        $result = $this->UserModel->addreplycomment();
+        $result = $this->model->addreplycomment();
         if ($result == "success") {
             $post = array(
                 'status'  => true,
@@ -1586,7 +1586,7 @@ class User extends BaseController
     public function MatchCommentLike()
     {
         // echo $id;die();
-        $result = $this->UserModel->comment_like();
+        $result = $this->model->comment_like();
         // print_r($result);die();
         if ($result == "success") {
             $post = array(
@@ -1617,7 +1617,7 @@ class User extends BaseController
     public function CreateOpenMatch()
     {
         $data = $this->input->post();
-        $matchid = $this->UserModel->CreateOpenMatch($data);
+        $matchid = $this->model->CreateOpenMatch($data);
         $links = json_decode($data['links']);
         $texts = json_decode($data['texts']);
         $userid = $data['rival_id'];
@@ -1637,7 +1637,7 @@ class User extends BaseController
                     'filetype' => 'link',
                     'created_at' => $current_date
                 );
-                $results = $this->UserModel->savefile($data);
+                $results = $this->model->savefile($data);
                 if ($results != "success") {
                     $post = array(
                         'status'  => false,
@@ -1656,7 +1656,7 @@ class User extends BaseController
                     'filetype' => 'text',
                     'created_at' => $current_date
                 );
-                $results = $this->UserModel->savefile($data);
+                $results = $this->model->savefile($data);
                 if ($results != "success") {
                     $post = array(
                         'status'  => false,
@@ -1718,7 +1718,7 @@ class User extends BaseController
         $userid = $this->input->post('userid');
         $links = json_decode($this->input->post('links'));
         $texts = json_decode($this->input->post('texts'));
-        $matchid = $this->UserModel->create_personalmatch($userid);
+        $matchid = $this->model->create_personalmatch($userid);
 
         $post = array(
             'status'  => true,
@@ -1735,7 +1735,7 @@ class User extends BaseController
                     'filetype' => 'link',
                     'created_at' => $current_date
                 );
-                $results = $this->UserModel->savefile($data);
+                $results = $this->model->savefile($data);
                 if ($results != "success") {
                     $post = array(
                         'status'  => false,
@@ -1753,7 +1753,7 @@ class User extends BaseController
                     'filetype' => 'text',
                     'created_at' => $current_date
                 );
-                $results = $this->UserModel->savefile($data);
+                $results = $this->model->savefile($data);
                 if ($results != "success") {
                     $post = array(
                         'status'  => false,
@@ -1777,7 +1777,7 @@ class User extends BaseController
         date_default_timezone_set('Asia/Kolkata');
         $current_date    = date('Y-m-d H:i:s');
         $rival_userid = $this->input->post('rival_userid');
-        $matchid = $this->UserModel->create_closedmatch();
+        $matchid = $this->model->create_closedmatch();
         // $oppo_filename = $this->input->post('match_filename');
         $links = json_decode($this->input->post('link'));
         $texts = json_decode($this->input->post('text'));
@@ -1802,7 +1802,7 @@ class User extends BaseController
                     // ,
                     // 'sub_caption' => $sub_caption
                 );
-                $results = $this->UserModel->savefile($data);
+                $results = $this->model->savefile($data);
                 if ($results != "success") {
                     $post = array(
                         'status'  => false,
@@ -1823,7 +1823,7 @@ class User extends BaseController
                     // ,
                     // 'sub_caption' => $sub_caption
                 );
-                $results = $this->UserModel->savefile($data);
+                $results = $this->model->savefile($data);
                 if ($results != "success") {
                     $post = array(
                         'status'  => false,
@@ -1844,12 +1844,12 @@ class User extends BaseController
     }
     public function ClosedMatch()
     {
-        $result = $this->UserModel->get_closedmatch();
-        // $result['link'] = $this->UserModel->get_closedmatch_link();
-        // $result['text'] = $this->UserModel->get_closedmatch_text();
-        // $result['audio'] = $this->UserModel->get_closedmatch_audio();
-        // $result['image'] = $this->UserModel->get_closedmatch_image();
-        // $result['video'] = $this->UserModel->get_closedmatch_video();
+        $result = $this->model->get_closedmatch();
+        // $result['link'] = $this->model->get_closedmatch_link();
+        // $result['text'] = $this->model->get_closedmatch_text();
+        // $result['audio'] = $this->model->get_closedmatch_audio();
+        // $result['image'] = $this->model->get_closedmatch_image();
+        // $result['video'] = $this->model->get_closedmatch_video();
         if (!empty($result)) {
             $post = array(
                 'status'  => true,
@@ -1868,7 +1868,7 @@ class User extends BaseController
     public function personallike()
     {
         // echo $id;die();
-        $result = $this->UserModel->personallike();
+        $result = $this->model->personallike();
         if ($result == "like") {
             $post = array(
                 'status'  => true,
@@ -1898,12 +1898,12 @@ class User extends BaseController
     public function matchfilter()
     {
         // echo 'hi';die();
-        $user_data['link'] = $this->UserModel->get_ongoingmatch_link();
-        $user_data['text'] = $this->UserModel->get_ongoingmatch_text();
-        $user_data['audio'] = $this->UserModel->get_ongoingmatch_audio();
-        $user_data['image'] = $this->UserModel->get_ongoingmatch_image();
-        $user_data['video'] = $this->UserModel->get_ongoingmatch_video();
-        // $user_data['fan_of'] = $this->UserModel->list_fanof($id);
+        $user_data['link'] = $this->model->get_ongoingmatch_link();
+        $user_data['text'] = $this->model->get_ongoingmatch_text();
+        $user_data['audio'] = $this->model->get_ongoingmatch_audio();
+        $user_data['image'] = $this->model->get_ongoingmatch_image();
+        $user_data['video'] = $this->model->get_ongoingmatch_video();
+        // $user_data['fan_of'] = $this->model->list_fanof($id);
 // print_r($user_data['link']);die();
         if ((!empty($user_data['link'])) || (!empty($user_data['text'])) || (!empty($user_data['audio'])) || (!empty($user_data['image']))) {
             $data = array(
@@ -1924,7 +1924,7 @@ class User extends BaseController
     public function Bestielike()
     {
         // echo $id;die();
-        $result = $this->UserModel->Bestielike();
+        $result = $this->model->Bestielike();
         // print_r($result);die();
         if ($result == "success") {
             $post = array(
@@ -1955,7 +1955,7 @@ class User extends BaseController
     public function BestieComment()
     {
         // echo $id;die();
-        $result = $this->UserModel->BestieComment();
+        $result = $this->model->BestieComment();
         if ($result == "success") {
             $post = array(
                 'status'  => true,
@@ -1985,7 +1985,7 @@ class User extends BaseController
     public function UpdateBestieComment()
     {
         // echo $id;die();
-        $result = $this->UserModel->UpdateBestieComment();
+        $result = $this->model->UpdateBestieComment();
         if ($result == "success") {
             $post = array(
                 'status'  => true,
@@ -2009,7 +2009,7 @@ class User extends BaseController
      public function GetBestieComment()
     {
         // echo $id;die();
-        $result = $this->UserModel->getbestieComment();
+        $result = $this->model->getbestieComment();
 
         if (!empty($result)) {
             $post = array(
@@ -2029,7 +2029,7 @@ class User extends BaseController
     }
     public function DeleteBestieComment()
     {
-        $result = $this->UserModel->DeleteBestieComment();
+        $result = $this->model->DeleteBestieComment();
         if ($result == "success") {
             $post = array(
                 'status'  => true,
@@ -2046,7 +2046,7 @@ class User extends BaseController
     public function BestieCommentLike()
     {
         // echo $id;die();
-        $result = $this->UserModel->BestieCommentLike();
+        $result = $this->model->BestieCommentLike();
         // print_r($result);die();
         if ($result == "success") {
             $post = array(
@@ -2084,7 +2084,7 @@ class User extends BaseController
         return '';
     }
     public function disable_comment(){
-        $result = $this->UserModel->disable_comment();
+        $result = $this->model->disable_comment();
         // print_r($result);die();
         if ($result == "success") {
             $post = array(

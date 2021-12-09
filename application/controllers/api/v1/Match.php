@@ -3,7 +3,11 @@ defined('BASEPATH') or exit('No direct script access allowed');
 require APPPATH . '/core/BaseController.php';
 class Match extends BaseController
 {
-
+    public function __construct()
+    {   
+        parent::__construct();
+        $this->load->model('MatchModel', "model");
+    }
     public function getOngoingMatch($id){
         $match = (array)$this->Match->select($id);
         

@@ -3,7 +3,11 @@ defined('BASEPATH') or exit('No direct script access allowed');
 require APPPATH . '/core/BaseController.php';
 class Like extends BaseController
 {
-
+    public function __construct()
+    {   
+        parent::__construct();
+        $this->load->model('LikeModel', "model");
+    }
     public function personallike(){
         $filter = $this->input->post();
         $like = (array)$this->Like->one($filter);

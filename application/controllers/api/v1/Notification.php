@@ -4,6 +4,12 @@ require APPPATH . '/core/BaseController.php';
 class Notification extends BaseController
 {
 
+    public function __construct()
+    {   
+        parent::__construct();
+        $this->load->model('NotificationModel', "model");
+    }
+
     public function getNotification($user_id){
         $filter = array(
             'receiver_id'=>$user_id,

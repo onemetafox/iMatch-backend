@@ -4,6 +4,12 @@ require APPPATH . '/core/BaseController.php';
 class Bestie extends BaseController
 {
 
+    public function __construct()
+    {   
+        parent::__construct();
+        $this->load->model('BestieModel', "model");
+    }
+    
     public function add_bestie()
     {
         $data = $this->input->post();
